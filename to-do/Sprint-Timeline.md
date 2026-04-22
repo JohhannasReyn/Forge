@@ -27,8 +27,8 @@ Tasks:
   - `.prettierrc.json`
   - test script with coverage
 - Draft README sections:
-  - logo
-  - language name
+  - logo (find logo in @./public/images/logo.png)
+  - language name (Forge)
   - intro story
   - feature list
   - static checks list
