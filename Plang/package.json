@@ -1,0 +1,27 @@
+{
+  "name": "forge",
+  "version": "0.1.0",
+  "description": "The Forge programming language compiler",
+  "type": "module",
+  "main": "src/forge.js",
+  "bin": { "forge": "src/forge.js" },
+  "author": ["TODO: Add team member names"],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JohhannasReyn/Forge"
+  },
+  "scripts": {
+    "test": "c8 mocha --timeout 10000",
+    "coverage": "c8 --reporter=lcov mocha",
+    "format": "prettier --write \"**/*.{js,ohm,md,json}\""
+  },
+  "dependencies": {
+    "ohm-js": "^17.1.0"
+  },
+  "devDependencies": {
+    "c8": "^9.0.0",
+    "mocha": "^10.0.0",
+    "prettier": "^3.0.0"
+  }
+}
