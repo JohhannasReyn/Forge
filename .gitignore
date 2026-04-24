@@ -1,0 +1,11 @@
+node_modules/
+coverage/
+.DS_Store
+*.log
+pdf_lib/
+public/
+to-do/
+Ohm-Script.ohm
+language-keywords.txt
+Plang.md
+Plang/
