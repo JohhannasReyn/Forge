@@ -1,7 +1,7 @@
 import assert from "assert/strict"
 import { parse } from "../src/parser.js"
 import { analyze } from "../src/analyzer.js"
-import { BYTE, INUM, isAssignableTo } from "../src/core.js"
+import { ANY, BYTE, DNUM, HILO, INUM, arrayType, customType, isAssignableTo } from "../src/core.js"
 
 function ok(src) {
   assert.doesNotThrow(() => analyze(parse(src)))
@@ -59,6 +59,12 @@ describe("Analyzer", () => {
   describe("type checking", () => {
     it("accepts numeric addition", () => ok("let x = 1 + 2;"))
     it("accepts float arithmetic", () => ok("let x = 1.0 + 2.0;"))
+    it("accepts ternary expressions", () => ok("let x = (TT) ? 1 : 2;"))
+    it("accepts logical xor expressions", () => ok("let x: hilo = TT ^| FF;"))
+    it("accepts logical xnor expressions", () => ok("let x: hilo = TT ^& FF;"))
+    it("accepts unary logical not", () => ok("let x: hilo = !TT;"))
+    it("accepts unary arithmetic negation", () => ok("let x: inum = -5;"))
+    it("accepts unary bitnot on integers", () => ok("let x: inum = bitnot 5;"))
     it("rejects bitwise on float", () => bad("let x = 1.0 bitand 2.0;", /integer/))
     it("rejects bitwise on bool", () => bad("let x = TT bitand FF;", /integer/))
     it("accepts bitwise on inum", () => ok("func f(a: inum, b: inum): inum { deliver a bitand b; }"))
@@ -96,6 +102,15 @@ describe("Analyzer", () => {
     it("byte is assignable to itself", () => {
       assert.ok(isAssignableTo(BYTE, BYTE))
     })
+    it("any is assignable to inum", () => {
+      assert.ok(isAssignableTo(ANY, INUM))
+    })
+    it("inum is assignable to any", () => {
+      assert.ok(isAssignableTo(INUM, ANY))
+    })
+    it("hilo widens to dnum", () => {
+      assert.ok(isAssignableTo(HILO, DNUM))
+    })
   })
 
   describe("do-while loop", () => {
@@ -107,5 +122,60 @@ describe("Analyzer", () => {
     it("accepts for with let init", () => ok("whento (let i = 0; i < 10; i++) { }"))
     it("accepts for with assign init", () => ok("let i = 0; whento (i = 0; i < 5; i++) { }"))
     it("accepts for with pre-decrement", () => ok("whento (let i = 10; i > 0; --i) { }"))
+    it("accepts for with compound update", () => ok("whento (let i = 0; i < 10; i += 2) { }"))
+    it("rejects pre-increment on constants", () => bad("C i = 0; ++i;", /constant/))
+    it("rejects post-decrement on constants", () => bad("C i = 0; i--;", /constant/))
+  })
+
+  describe("analyzed node types", () => {
+    it("annotates ternary expressions with a type", () => {
+      const program = analyze(parse("let x = (TT) ? 1 : 2;"))
+      assert.equal(program.statements[0].initializer.type, INUM)
+    })
+
+    it("annotates logical binary expressions as hilo", () => {
+      const program = analyze(parse("let x = TT && FF;"))
+      assert.equal(program.statements[0].initializer.type, HILO)
+    })
+
+    it("annotates unary bitnot with the operand type", () => {
+      const program = analyze(parse("let x = bitnot 5;"))
+      assert.equal(program.statements[0].initializer.type, INUM)
+    })
+
+    it("annotates pre-increment expressions with the identifier type", () => {
+      const program = analyze(parse("let x = 0; ++x;"))
+      assert.equal(program.statements[1].expression.type, INUM)
+    })
+
+    it("annotates post-decrement expressions with the identifier type", () => {
+      const program = analyze(parse("let x = 0; x--;"))
+      assert.equal(program.statements[1].expression.type, INUM)
+    })
+
+    it("annotates field expressions as any", () => {
+      const program = analyze(parse("global g = { value: 1 }; let x = g.value;"))
+      assert.equal(program.statements[1].initializer.type, ANY)
+    })
+
+    it("annotates slice expressions as any", () => {
+      const program = analyze(parse("let arr = 0; let x = arr[0:5];"))
+      assert.equal(program.statements[1].initializer.type, ANY)
+    })
+
+    it("annotates index expressions as any", () => {
+      const program = analyze(parse("let arr = 0; let x = arr[0];"))
+      assert.equal(program.statements[1].initializer.type, ANY)
+    })
+  })
+
+  describe("core helper factories", () => {
+    it("builds custom types", () => {
+      assert.deepEqual(customType("Color"), { kind: "custom", name: "Color" })
+    })
+
+    it("builds array types", () => {
+      assert.deepEqual(arrayType(INUM), { kind: "array", base: INUM })
+    })
   })
 })

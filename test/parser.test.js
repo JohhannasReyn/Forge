@@ -163,6 +163,21 @@ describe("Parser", () => {
       const ast = parse("let x = non;")
       assert.equal(ast.statements[0].initializer.kind, "NullLit")
     })
+    it("for post-decrement update becomes PostIncDec", () => {
+      const ast = parse("whento (let i = 10; i > 0; i--) { }")
+      assert.equal(ast.statements[0].update.kind, "PostIncDec")
+      assert.equal(ast.statements[0].update.op, "--")
+    })
+    it("for pre-increment update becomes PreIncDec", () => {
+      const ast = parse("whento (let i = 0; i < 10; ++i) { }")
+      assert.equal(ast.statements[0].update.kind, "PreIncDec")
+      assert.equal(ast.statements[0].update.op, "++")
+    })
+    it("for compound update becomes CompoundAssignStmt", () => {
+      const ast = parse("whento (let i = 0; i < 10; i += 2) { }")
+      assert.equal(ast.statements[0].update.kind, "CompoundAssignStmt")
+      assert.equal(ast.statements[0].update.op, "+=")
+    })
   })
 
   describe("syntax errors", () => {
