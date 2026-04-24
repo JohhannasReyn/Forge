@@ -57,7 +57,7 @@ const stmtHandlers = {
     }
     const inner = ctx.child({ returnType: node.returnType })
     for (const p of node.params) {
-      inner.add(p.name, { kind: "Variable", name: p.name, type: p.type, readOnly: true })
+      inner.add(p.name, { kind: "Variable", name: p.name, type: p.type, readOnly: false })
     }
     stmtHandlers.Block(node.body, inner)
     return node

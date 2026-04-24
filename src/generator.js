@@ -74,6 +74,7 @@ const generators = {
       bitxor: "^",
       shiftl: "<<",
       shiftr: ">>",
+      "^": "**",
       "^|": null,
       "^&": null,
     }

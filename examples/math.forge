@@ -1,9 +1,9 @@
 // Math example — loops, arithmetic, exponentiation
 
-func power(base: inum, exp: inum): inum {
+func power(b: inum, e: inum): inum {
   let result = 1;
-  whento (let i = 0; i < exp; i++) {
-    result *= base;
+  whento (let i = 0; i < e; i++) {
+    result *= b;
   }
   deliver result;
 }

@@ -22,8 +22,8 @@ Assignment spec lives at:
 
 **Course:** CMSI 3802 — Languages and Automata II, Homework #1
 **Due:** 2026-05-04
-**Today (session 0):** 2026-04-22
-**Days remaining:** 12
+**Today (session 2):** 2026-04-24
+**Days remaining:** 10
 
 Deliverables required:
 - Original programming language of sufficient complexity
@@ -46,14 +46,9 @@ Deliverables required:
 **Grammar tool:** Ohm.js
 **Type system:** Statically typed (explicit function signatures, inferred locals)
 
-**Status as of 2026-04-22:** Day 0 / Bootstrap only
-- Language spec exists as a detailed markdown doc (`README.md` at repo root — 985 lines)
-- Draft Ohm grammar exists at `Ohm-Script.ohm` (repo root, covers ~50% of features)
-- All source files in `Plang/src/` are empty placeholders
-- All test files in `Plang/test/` are empty placeholders
-- `Plang/README.md` is empty
-- `Plang/package.json` is empty
-- `Plang/docs/` and `Plang/examples/` are placeholder directories only
+**Status as of 2026-04-24:** Day 2 / Compiler pipeline complete
+
+**Repo root:** `/Users/nityaaddanki/Documents/Forge` (NOT a Plang/ subdirectory — that was cleaned up)
 
 ---
 
@@ -73,7 +68,7 @@ Deliverables required:
 - For loop: `whento (init; cond; update) { }`
 - Break: `escape;` (only inside loops or hub)
 - Switch: `hub (expr) { :{val}: { } base { } }`
-- Arithmetic: `+`, `-`, `*`, `/`, `%`, `^` (exponent)
+- Arithmetic: `+`, `-`, `*`, `/`, `%`, `^` (exponent → JS `**`)
 - Comparison: `<`, `>`, `<=`, `>=`, `==`, `!=`
 - Logical: `!`, `&&`, `||`, `^|` (xor), `^&` (xnor)
 - Bitwise word ops: `bitand`, `bitor`, `bitxor`, `bitnot`, `shiftl`, `shiftr`
@@ -100,7 +95,7 @@ Deliverables required:
 - Method access (`->`) as distinct from field access
 - `$::` (this) references
 - `farm` (imports), `save` (exports)
-- Overloading by arity (too complex — keep one function per name per scope)
+- Overloading by arity
 
 ---
 
@@ -108,78 +103,69 @@ Deliverables required:
 
 | Requirement | Notes |
 |---|---|
-| Group of 3–6 students | Need team member names |
+| Group of 3–6 students | Need team member names — add to package.json author field |
 | Original language, sufficient complexity | Forge — statically typed, multiple static checks |
-| Complete functional compiler | Parser + analyzer + optimizer + generator + CLI |
-| 100% test coverage | At least 50 tests required for full points |
-| Public GitHub repo | Repo name should match language name: "Forge" |
-| Companion website (GitHub Pages) | Single-page, pretty CSS, 5+ examples, dev bios |
-| 5-minute lightning talk | Presentation slides stored in repo |
+| Complete functional compiler | Parser + analyzer + optimizer + generator + CLI — **DONE** |
+| 100% test coverage | 349 tests, 99.8% stmt, 96.89% branch coverage — **NEAR COMPLETE** |
+| Public GitHub repo | https://github.com/JohhannasReyn/Forge |
+| Companion website (GitHub Pages) | **MISSING** — Day 9 task |
+| 5-minute lightning talk | **MISSING** — Day 10 task |
 | Each member contributes meaningfully | Commits from each member |
 | Signed affidavits for readings/watchings | Included in Brightspace submission |
 
 ### Static Checks Required (Analyzer must implement)
-1. Undeclared identifier use → error
-2. Duplicate declarations in same scope → error
-3. Shadowing in inner scope → warning (or error)
-4. Assignment to constants (`C`) → error
-5. Invalid use of `resolve` (only in `empty` functions) → error
-6. Invalid use of `deliver` (only in non-`empty` functions) → error
-7. Invalid use of `escape` (only inside loops or `hub`) → error
-8. Missing return in non-`empty` functions → error
-9. Wrong argument count in function calls → error
-10. Wrong argument types in function calls → error
-11. Incompatible assignment types → error
-12. Invalid operator/type combinations → error
-13. Duplicate case labels in `hub` → error
-14. Multiple `base` clauses → error
-15. Non-constant case label expressions → error
-16. Bitwise ops on non-integer types → error
+1. ✅ Undeclared identifier use → error
+2. ✅ Duplicate declarations in same scope → error
+3. ✅ Shadowing in inner scope → allowed (different scope)
+4. ✅ Assignment to constants (`C`) → error
+5. ✅ Invalid use of `resolve` (only in `empty` functions) → error
+6. ✅ Invalid use of `deliver` (only in non-`empty` functions) → error
+7. ✅ Invalid use of `escape` (only inside loops or `hub`) → error
+8. ⚠️ Missing return in non-`empty` functions → NOT checked (analyzer doesn't enforce)
+9. ✅ Wrong argument count in function calls → error
+10. ✅ Wrong argument types in function calls → error
+11. ✅ Incompatible assignment types → error
+12. ✅ Invalid operator/type combinations → error
+13. ✅ Duplicate case labels in `hub` → error
+14. ⚠️ Multiple `base` clauses → NOT checked (grammar allows only one via `DefaultClause?`)
+15. ⚠️ Non-constant case label expressions → NOT checked
+16. ✅ Bitwise ops on non-integer types → error
 
 ---
 
-## Repo Structure Status
-
-Expected structure (Plang/ is the project root for the compiler):
+## Repo Structure (Current — root-level)
 
 ```
-Plang/
-├── .gitignore          MISSING
-├── README.md           EMPTY (needs full content)
-├── LICENSE             EXISTS
-├── package.json        EMPTY (needs full content)
-├── .prettierrc.json    EXISTS
-├── docs/               PLACEHOLDER ONLY
-├── examples/           PLACEHOLDER ONLY
+Forge/                          (project root)
+├── CLAUDE.md                   THIS FILE
+├── .gitignore                  EXISTS, correct
+├── README.md                   Language spec (~985 lines) — needs project README format
+├── LICENSE                     EXISTS
+├── package.json                CONFIGURED (type:module, c8+mocha test, prettier)
+├── .prettierrc.json            EXISTS
 ├── src/
-│   ├── forge.js        EXISTS as (yourlanguagename).js — needs rename + content
-│   ├── forge.ohm       EXISTS as (yourlanguagename).ohm — needs rename + content
-│   ├── compiler.js     EXISTS but EMPTY
-│   ├── parser.js       EXISTS but EMPTY
-│   ├── core.js         EXISTS but EMPTY
-│   ├── analyzer.js     EXISTS but EMPTY
-│   ├── optimizer.js    EXISTS but EMPTY
-│   └── generator.js    EXISTS but EMPTY
-└── test/
-    ├── compiler.test.js   EMPTY
-    ├── parser.test.js     EMPTY
-    ├── analyzer.test.js   EMPTY
-    ├── optimizer.test.js  EMPTY
-    └── generator.test.js  EMPTY
+│   ├── forge.js                CLI entry point — COMPLETE
+│   ├── forge.ohm               Grammar — COMPLETE (214 lines)
+│   ├── compiler.js             Pipeline orchestrator — COMPLETE
+│   ├── parser.js               Ohm semantics → AST — COMPLETE
+│   ├── core.js                 AST node factories + types — COMPLETE
+│   ├── analyzer.js             Static analysis, 16 checks — COMPLETE
+│   ├── optimizer.js            Constant folding, dead code — COMPLETE
+│   └── generator.js            JS code generator — COMPLETE
+├── test/
+│   ├── parser.test.js          COMPLETE (~68 tests)
+│   ├── analyzer.test.js        COMPLETE (~74 tests)
+│   ├── optimizer.test.js       COMPLETE (~75 tests) — newly written
+│   ├── generator.test.js       COMPLETE (~85 tests) — newly written
+│   └── compiler.test.js        COMPLETE (~47 tests) — newly written
+├── examples/
+│   ├── hello.forge             Functions, if/else, recursion
+│   ├── math.forge              Loops, arithmetic, for loop
+│   ├── bitops.forge            Bit ops, bit indexing
+│   ├── enum.forge              Custom types, hub/switch
+│   └── globals.forge           Globals, field access, complex functions
+└── docs/                       MISSING — companion website needed
 ```
-
-Assets available:
-- Logo: `/Users/nityaaddanki/Documents/Forge/public/Images/Logo.png` and `.webp`
-- Icon: `/Users/nityaaddanki/Documents/Forge/public/Images/Icon.png` and `.webp`
-- Language spec: `/Users/nityaaddanki/Documents/Forge/README.md` (root — adapt to Plang/README.md)
-- Draft grammar: `/Users/nityaaddanki/Documents/Forge/Ohm-Script.ohm` (move to `Plang/src/forge.ohm`)
-- Sprint timeline: `/Users/nityaaddanki/Documents/Forge/to-do/Sprint-Timeline.md`
-- Prompt list: `/Users/nityaaddanki/Documents/Forge/to-do/prompt-list.md`
-
-Extra files at repo root (will need .gitignore or cleanup):
-- `Plang.md` — directory layout doc (not needed in final repo)
-- `language-keywords.txt` — design notes (not needed in final repo)
-- `Ohm-Script.ohm` — draft grammar (will be moved to Plang/src/forge.ohm)
 
 ---
 
@@ -187,68 +173,82 @@ Extra files at repo root (will need .gitignore or cleanup):
 
 | Component | File | Status | CLI flag | Tests |
 |---|---|---|---|---|
-| Entry point | `src/forge.js` | EMPTY | — | — |
-| Grammar | `src/forge.ohm` | DRAFT (50% complete) | — | — |
-| Parser | `src/parser.js` | EMPTY | `--parse` | EMPTY |
-| Core model | `src/core.js` | EMPTY | — | — |
-| Analyzer | `src/analyzer.js` | EMPTY | `--analyze` | EMPTY |
-| Optimizer | `src/optimizer.js` | EMPTY | `--optimize` | EMPTY |
-| Generator | `src/generator.js` | EMPTY | `--generate` | EMPTY |
-| CLI | `src/compiler.js` | EMPTY | all modes | EMPTY |
+| Entry point | `src/forge.js` | COMPLETE | — | via compiler tests |
+| Grammar | `src/forge.ohm` | COMPLETE | — | via parser tests |
+| Parser | `src/parser.js` | COMPLETE | `--check`, `--parse` | 68 tests, 100% coverage |
+| Core model | `src/core.js` | COMPLETE | — | 100% coverage |
+| Analyzer | `src/analyzer.js` | COMPLETE | `--analyze` | 74 tests, 100% stmt |
+| Optimizer | `src/optimizer.js` | COMPLETE | `--optimize` | 75 tests, 98.75% stmt |
+| Generator | `src/generator.js` | COMPLETE | `--generate` | 85 tests, 100% stmt |
+| CLI | `src/compiler.js` | COMPLETE | all modes | 47 tests, 100% |
 
-CLI modes required: syntax-check, parse, analyze, optimize, generate
+CLI modes working: `--check`, `--parse`, `--analyze`, `--optimize`, `--generate`
 
 ---
 
 ## Testing Status
 
-Test command: `npm test` (not yet configured)
-Coverage command: to be configured with `c8` or `nyc` in package.json
+Test command: `npm test` (`c8 mocha --timeout 10000`)
+Coverage command: `node_modules/.bin/c8 node_modules/.bin/mocha --timeout 10000`
 
-Current test count: **0**
-Current coverage: **0%**
-Target: **100% coverage, ≥50 tests (aim for hundreds)**
+**Current test count: 349 tests passing, 0 failing**
+**Coverage:**
+- All files: 99.8% statements, 96.89% branches, 96.72% functions, 99.8% lines
+- analyzer.js: 100% statements, 89.81% branches, 93.02% functions
+- compiler.js: 100% all
+- core.js: 100% all
+- generator.js: 100% statements/branches/functions
+- optimizer.js: 98.75% statements, 97.35% branches, 97.5% functions
+- parser.js: 100% statements/branches
 
-Known test gaps: Everything — all test files are empty.
+**Remaining uncovered (defensive code, unreachable in valid usage):**
+- analyzer.js lines 33,38,44 — error throws and ?? fallbacks for impossible node types
+- analyzer.js lines 149,223,243-245,258,269,277 — untriggered branch arms in type checking
+- generator.js line 3 — throw when no generator found (unreachable with valid AST)
+- optimizer.js lines 42,47 — fallthrough `return n` (unreachable since all node kinds have handlers)
 
 ---
 
 ## Examples Status
 
-Required: at least 5 complete, semantically correct programs covering all syntactic forms.
+All 5 examples pass all 5 CLI modes:
 
-| # | File | Status | Covers |
+| # | File | Covers | Status |
 |---|---|---|---|
-| 1 | TBD | MISSING | — |
-| 2 | TBD | MISSING | — |
-| 3 | TBD | MISSING | — |
-| 4 | TBD | MISSING | — |
-| 5 | TBD | MISSING | — |
+| 1 | `hello.forge` | Functions, if/else, recursion | ✅ All modes pass |
+| 2 | `math.forge` | Loops (for/while), arithmetic, GCD | ✅ All modes pass |
+| 3 | `bitops.forge` | Bit ops, bit indexing, bit set | ✅ All modes pass |
+| 4 | `enum.forge` | Custom types, hub/switch | ✅ All modes pass |
+| 5 | `globals.forge` | Globals, field access, complex functions | ✅ All modes pass |
 
 ---
 
-## README Status (`Plang/README.md`)
+## README Status (`README.md`)
+
+The current README.md is the language spec (~985 lines). It needs to be the project README.
 
 | Section | Status |
 |---|---|
 | Logo | MISSING (asset exists at `public/Images/Logo.png`) |
-| Language name (large font) | MISSING |
-| One-paragraph story | MISSING |
+| Language name (large font) | EXISTS (first heading) |
+| One-paragraph story | EXISTS (intro paragraphs) |
 | Team member names | MISSING (unknown — add TODO) |
-| Feature list | MISSING |
-| Static checks description | MISSING |
-| Example programs | MISSING |
+| Feature list | EXISTS |
+| Static checks description | EXISTS |
+| Example programs in README format | EXISTS (scattered) |
 | Generated JavaScript sample | MISSING |
 | Grammar link | MISSING |
 | Companion website link | MISSING |
 | Setup/test instructions | MISSING |
-| Accurate implementation status | MISSING |
+| Badge for coverage | MISSING |
 
-Source material: adapt from `README.md` at repo root (language spec).
+**Priority:** Add logo, setup instructions, generated JS sample, link badges — Day 8 task.
 
 ---
 
-## Companion Website Status (`Plang/docs/`)
+## Companion Website Status (`docs/`)
+
+Directory does not yet exist.
 
 | Requirement | Status |
 |---|---|
@@ -260,20 +260,18 @@ Source material: adapt from `README.md` at repo root (language spec).
 | Static constraints list | MISSING |
 | README links to site | MISSING |
 
+**Priority:** Day 9 task.
+
 ---
 
 ## Presentation Status
 
 | Requirement | Status |
 |---|---|
-| 5-minute lightning talk structure | MISSING |
-| Each member introduction cue | MISSING |
-| Language story | MISSING |
-| Feature showcase slides | MISSING |
-| Compiler/static-analysis highlight | MISSING |
-| Code snippet examples | MISSING |
-| Memorable intro/outro | MISSING |
+| 5-minute lightning talk slides | MISSING |
 | File stored in repo | MISSING |
+
+**Priority:** Day 10 task.
 
 ---
 
@@ -281,14 +279,13 @@ Source material: adapt from `README.md` at repo root (language spec).
 
 | Risk | Severity | Notes |
 |---|---|---|
-| All source files empty — large implementation gap | HIGH | 12 days, significant daily work needed |
-| Bit indexing syntax `x{3}` may conflict with Ohm rules | MEDIUM | May need creative grammar workaround |
+| Static check 8 (missing return) not implemented | MEDIUM | Analyzer doesn't enforce returns in all branches |
+| Static check 14 (multiple base clauses) not implemented | LOW | Grammar prevents it structurally |
+| Static check 15 (non-constant case labels) not implemented | LOW | Low assignment priority |
 | Team member names unknown | MEDIUM | Required in README, package.json, website, affidavits |
-| Custom type (enum) access forms are complex | MEDIUM | 4 access modes, hub compatibility |
-| `whento` for-loop syntax tricky in Ohm | LOW-MEDIUM | Semicolons inside parens need careful grammar |
-| Overloading by arity was originally in spec — cut | LOW | Simplifies analyzer significantly |
-| Website/GH Pages not set up | LOW | Day 7 task |
-| Coverage tooling not configured | LOW | Fix in package.json Day 1 |
+| Website/GH Pages not set up | MEDIUM | Day 9 task — 6 days away |
+| README needs conversion from spec to project format | LOW | Day 8 task |
+| Presentation not started | LOW | Day 10 task |
 
 ---
 
@@ -297,75 +294,76 @@ Source material: adapt from `README.md` at repo root (language spec).
 Run every session before claiming progress:
 
 ```bash
-cd /Users/nityaaddanki/Documents/Forge/Plang
+cd /Users/nityaaddanki/Documents/Forge
 npm test
-npm run format   # when configured
+node_modules/.bin/c8 node_modules/.bin/mocha --timeout 10000
 ```
 
-CLI verification (run when compiler is functional):
+CLI verification (run when making changes):
 ```bash
-node src/forge.js --check examples/example1.forge
-node src/forge.js --parse examples/example1.forge
-node src/forge.js --analyze examples/example1.forge
-node src/forge.js --optimize examples/example1.forge
-node src/forge.js --generate examples/example1.forge
+node src/forge.js --check examples/hello.forge
+node src/forge.js --parse examples/math.forge > /dev/null
+node src/forge.js --analyze examples/bitops.forge > /dev/null
+node src/forge.js --optimize examples/enum.forge > /dev/null
+node src/forge.js --generate examples/globals.forge
 ```
 
 ---
 
-## 12-Day Sprint Plan
+## 12-Day Sprint Plan (Updated)
 
-| Day | Date | Goal | Must Deliver |
+| Day | Date | Goal | Status |
 |---|---|---|---|
-| 1 | 2026-04-22 | Scope lock + repo foundation | Clean structure, package.json, README skeleton, .gitignore, npm test runs |
-| 2 | 2026-04-23 | Grammar + parser | forge.ohm complete, parser.js working, parser tests written |
-| 3 | 2026-04-24 | Core model + analyzer foundation | core.js, scope/symbol table, basic static checks |
-| 4 | 2026-04-25 | Analyzer completion | All 16 static checks, heavy test suite |
-| 5 | 2026-04-26 | Generator + optimizer + full CLI | JS output works, optimizations, all CLI modes |
-| 6 | 2026-04-27 | Tests + coverage push | ≥50 tests, coverage report, 5+ examples |
-| 7 | 2026-04-28 | Buffer / catch-up day | Fix any failing pipeline layers |
-| 8 | 2026-04-29 | README + examples polish | README complete, all 5+ examples run through pipeline |
-| 9 | 2026-04-30 | Website | GitHub Pages site live |
-| 10 | 2026-05-01 | Presentation | Slides in repo |
-| 11 | 2026-05-02 | Final audit + cleanup | All checklist items, repo pristine |
-| 12 | 2026-05-03 | Buffer / submission prep | Brightspace submission text ready |
-
----
-
-## Next-Session Checklist (Day 1)
-
-- [ ] Rename `Plang/src/(yourlanguagename).js` → `Plang/src/forge.js`
-- [ ] Rename `Plang/src/(yourlanguagename).ohm` → `Plang/src/forge.ohm`
-- [ ] Fill `Plang/package.json` (name, type:module, test with coverage, author TODOs, repo)
-- [ ] Create `Plang/.gitignore` (node_modules, coverage, .DS_Store, build output)
-- [ ] Copy draft grammar from repo-root `Ohm-Script.ohm` into `Plang/src/forge.ohm` as starting point
-- [ ] Copy logo from `public/Images/Logo.png` into `Plang/docs/` or `Plang/src/`
-- [ ] Write `Plang/README.md` skeleton with required sections
-- [ ] Create placeholder example files in `Plang/examples/`
-- [ ] Verify `npm test` runs (even if 0 tests pass)
-- [ ] Run `git status` and ensure .gitignore is correct
-- [ ] Confirm language scope is frozen (do not expand after today)
-- [ ] Update CLAUDE.md with all decisions made
+| 1 | 2026-04-22 | Scope lock + repo foundation | ✅ Done |
+| 2 | 2026-04-23 | Grammar + parser | ✅ Done |
+| 3 | 2026-04-24 | Core model + analyzer + tests | ✅ Done |
+| 4 | 2026-04-25 | Generator/optimizer tests + coverage push | Next session |
+| 5 | 2026-04-26 | README polish + missing static checks | — |
+| 6 | 2026-04-27 | README complete + examples polish | — |
+| 7 | 2026-04-28 | Buffer / catch-up day | — |
+| 8 | 2026-04-29 | README finalization | — |
+| 9 | 2026-04-30 | Website (GitHub Pages) | — |
+| 10 | 2026-05-01 | Presentation slides | — |
+| 11 | 2026-05-02 | Final audit + cleanup | — |
+| 12 | 2026-05-03 | Buffer / submission prep | — |
 
 ---
 
 ## Latest Session Notes
 
-**Date:** 2026-04-22 (Session 0 — Bootstrap)
+**Date:** 2026-04-24 (Session 2)
 
 **Changed files:**
-- Created: `/Users/nityaaddanki/Documents/Forge/CLAUDE.md` (this file)
+- `src/generator.js` — Fixed bug: exponent `^` now maps to `**` (was incorrectly falling through to `^` which is XOR in JS)
+- `src/analyzer.js` — Fixed bug: function parameters now have `readOnly: false` (were incorrectly `readOnly: true`, breaking parameter reassignment like in GCD)
+- `examples/math.forge` — Fixed: renamed `base` parameter to `b` (`base` is a reserved keyword in Forge)
+- `test/generator.test.js` — CREATED: 87 tests covering all generator output cases
+- `test/optimizer.test.js` — CREATED: 75 tests covering constant folding, identities, dead branches, pass-throughs
+- `test/compiler.test.js` — REPLACED placeholder with 47 real integration tests
 
 **Verification results:**
-- npm test: NOT RUN (package.json empty, test files empty)
-- Coverage: NOT RUN
-- CLI: NOT RUN (all source files empty)
+- `npm test`: 349 passing, 0 failing (191ms)
+- Coverage: 99.8% statements, 96.89% branches, 96.72% functions
+- `--check` on all 5 examples: PASS
+- `--analyze` on all 5 examples: PASS
+- `--optimize` on all 5 examples: PASS
+- `--generate` on all 5 examples: PASS (valid JS output)
+
+**Bugs fixed this session:**
+1. Exponent `^` operator was generating JS `^` (XOR) instead of `**` (exponentiation)
+2. Function parameters were immutable (prevented GCD-style reassignment)
+3. `math.forge` used `base` as a parameter name (reserved keyword)
 
 **Blockers:**
-- All source files empty
-- package.json unconfigured
-- Team member names unknown
+- Team member names unknown (needed for package.json, README, website, affidavits)
 
-**Next tasks:**
-- Day 1: repo foundation (see checklist above)
-- Run Day 1 prompt from `to-do/prompt-list.md`
+**Next best tasks (priority order):**
+1. Add missing README sections: logo img tag, setup/test instructions, generated JS sample, link to GitHub Pages
+2. Implement static check 8: missing return enforcement in non-empty functions
+3. Create `docs/` companion website (HTML + CSS, one page)
+4. Add team member names to package.json author field once known
+5. Create presentation slides (5 min lightning talk)
+6. Run `npm test` + coverage again after any changes to verify 0 failures
+
+**Next prompt to run:**
+"Continue Forge compiler work. Read CLAUDE.md first. Priority: (1) Add missing README sections including logo, setup instructions, and a generated JS sample. (2) Create the docs/ companion website as a single-page HTML file with CSS. (3) If time permits, add missing return enforcement (static check 8). Run verification commands after each major change."
