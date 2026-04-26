@@ -103,7 +103,7 @@ Deliverables required:
 
 | Requirement | Notes |
 |---|---|
-| Group of 3–6 students | Need team member names — add to package.json author field |
+| Group of 3–6 students | **Nitya Addanki, Tessa Smigla** — added to package.json |
 | Original language, sufficient complexity | Forge — statically typed, multiple static checks |
 | Complete functional compiler | Parser + analyzer + optimizer + generator + CLI — **DONE** |
 | 100% test coverage | 349 tests, 99.8% stmt, 96.89% branch coverage — **NEAR COMPLETE** |
@@ -282,7 +282,7 @@ Directory does not yet exist.
 | Static check 8 (missing return) not implemented | MEDIUM | Analyzer doesn't enforce returns in all branches |
 | Static check 14 (multiple base clauses) not implemented | LOW | Grammar prevents it structurally |
 | Static check 15 (non-constant case labels) not implemented | LOW | Low assignment priority |
-| Team member names unknown | MEDIUM | Required in README, package.json, website, affidavits |
+| Team member names known | RESOLVED | Nitya Addanki and Tessa Smigla — update README, website, affidavits |
 | Website/GH Pages not set up | MEDIUM | Day 9 task — 6 days away |
 | README needs conversion from spec to project format | LOW | Day 8 task |
 | Presentation not started | LOW | Day 10 task |
@@ -355,7 +355,7 @@ node src/forge.js --generate examples/globals.forge
 3. `math.forge` used `base` as a parameter name (reserved keyword)
 
 **Blockers:**
-- Team member names unknown (needed for package.json, README, website, affidavits)
+- Team members: Nitya Addanki and Tessa Smigla (added to package.json; still needed in README, website, affidavits)
 
 **Next best tasks (priority order):**
 1. Add missing README sections: logo img tag, setup/test instructions, generated JS sample, link to GitHub Pages
