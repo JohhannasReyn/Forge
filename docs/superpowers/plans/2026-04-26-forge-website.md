@@ -1265,7 +1265,7 @@ git commit -m "docs: add companion website link to README"
 
 Run: `wc -l docs/index.html docs/style.css`
 
-Expected: index.html is roughly 280–320 lines, style.css is roughly 220–260 lines.
+Expected: index.html is roughly 280–320 lines, style.css is roughly 380–390 lines.
 
 - [ ] **Step 2: Verify all five examples are present**
 
