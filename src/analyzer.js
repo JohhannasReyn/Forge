@@ -216,6 +216,8 @@ const stmtHandlers = {
       seen.add(key)
       stmtHandlers.Block(c.body, ctx.child({ inSwitch: true }))
     }
+    // Check 14: grammar enforces at most one DefaultClause via DefaultClause?
+    // so node.defaultCase is always null or a single Block here.
     if (node.defaultCase) stmtHandlers.Block(node.defaultCase, ctx.child({ inSwitch: true }))
     return node
   },
