@@ -1,984 +1,301 @@
-# Forge v0.1 Language Specification
+<p align="center">
+  <img src="public/Images/Logo.webp" alt="Forge Logo" width="250"/>
+</p>
 
-## 1. Overview
+<h1 align="center">Forge</h1>
 
-Forge is a statically checked, JavaScript-targeting programming language designed for readability, structured control flow, expressive return semantics, custom typed enumerations, and intuitive bit manipulation.
+<p align="center">
+  A statically-typed, JavaScript-targeting programming language with expressive control flow and intuitive bit manipulation.
+</p>
 
-Forge emphasizes:
-- clear function return behavior through `resolve` and `deliver`
-- structured branching via `is`, `not`, `hub`, and `base`
-- compile-time analyzable semantics
-- custom type support through `custom`
-- beginner-friendly and low-level-friendly bit operations
-
-This document defines the syntax, semantics, and type behavior of Forge v0.1.
-
----
-
-## 2. Design Goals
-
-Forge is intended to provide:
-
-- readable control flow
-- explicit and analyzable function behavior
-- inferred local variables with explicit function signatures
-- strong static analysis
-- intuitive data access patterns
-- expressive bitwise manipulation without sacrificing clarity
+<p align="center">
+  <img src="https://img.shields.io/badge/tests-349%20passing-brightgreen" alt="Tests"/>
+  <img src="https://img.shields.io/badge/coverage-99.8%25-brightgreen" alt="Coverage"/>
+  <img src="https://img.shields.io/badge/license-MIT-blue" alt="License"/>
+</p>
 
 ---
 
-## 3. Lexical Elements
+## The Story
 
-### 3.1 Reserved Keywords
+Forge was built as a language that reads like intent. Where other languages bolt on features, Forge starts from the question: *what should code say?* Returns are either `resolve` (nothing to give back) or `deliver` (here is the result). Loops come in three forms — `whenis`, `execute/whenis`, and `whento` — each chosen for what it communicates about the iteration pattern. Bit manipulation is first-class: index individual bits with `x{n}`, set them with `x{n} = TT`, and clear them with `x{n} = FF`. The type system is explicit at function boundaries and inferred everywhere else. Forge compiles to clean JavaScript so your programs run anywhere.
 
-The following words are reserved and may not be used as identifiers:
-
-- `abstract` → `shell`
-- `arguments` → `params`
-- `async`
-- `await`
-- `boolean` → `hilo`
-- `break` → `escape`
-- `byte`
-- `catch` → `onError`
-- `char`
-- `class` → `blueprint`
-- `const` → `C`
-- `continue` → `proceed`
-- `debugger` → `raid`
-- `default` → `base`
-- `delete` → `remove`
-- `do` → `execute`
-- `double` → `dnum`
-- `else` → `not`
-- `enum` → `custom`
-- `eval` → `expand`
-- `export` → `save`
-- `extends` → `inherits`
-- `false` → `FF`
-- `final` → `fin`
-- `finally` → `after`
-- `float` → `fnum`
-- `for` → `whento`
-- `function` → `func`
-- `goto` → `jump`
-- `if` → `is`
-- `implements` → `uses`
-- `import` → `farm`
-- `in` → `look`
-- `instanceof` → `istypeof`
-- `int` → `inum`
-- `interface` → `formed`
-- `let`
-- `long` → `lnum`
-- `native` → `cpp`
-- `new` → `create`
-- `null` → `non`
-- `package` → `wrap`
-- `private` → `secret`
-- `protected` → `heirs`
-- `public` → `overt`
-- `return` → `resolve`, `deliver`
-- `short` → `snum`
-- `static` → `preload`
-- `super` → `parent`
-- `switch` → `hub`
-- `synchronized` → `synced`
-- `this` → `$::`
-- `throw` → `explode`
-- `throws` → `reagent`
-- `transient` → `abrupt`
-- `true` → `TT`
-- `try` → `test`
-- `typeof` → `islike`
-- `using` → `buildswith`
-- `var`
-- `void` → `empty`
-- `volatile` → `erratic`
-- `while` → `whenis`
-- `global`
-
-### 3.2 Identifiers
-
-Identifiers:
-- are case-sensitive
-- must begin with a letter or underscore
-- may contain letters, digits, and underscores after the first character
-- may not match any reserved keyword
-
-Examples:
-```forge
-foo
-_bar
-someValue1
-Token
-````
-
-### 3.3 Literals
-
-Forge supports the following literal forms:
-
-#### Integer literals
-
-```forge
-0
-1
-42
-9001
-```
-
-#### Floating-point literals
-
-```forge
-3.14
-0.5
-12.0
-```
-
-#### Boolean literals
-
-```forge
-TT
-FF
-```
-
-#### Null literal
-
-```forge
-non
-```
-
-#### String literals
-
-Strings use double quotes.
-
-```forge
-"hello"
-"Forge"
-"line\nbreak"
-```
-
-#### Character literals
-
-Characters use single quotes.
-
-```forge
-'a'
-'\n'
-'Z'
-```
-
-### 3.4 Comments
-
-Forge supports both line comments and block comments.
-
-```forge
-// this is a line comment
-
-/* this is
-   a block comment */
-```
-
-### 3.5 Whitespace
-
-Whitespace is insignificant except where needed to separate tokens.
+**Authors:** Nitya Addanki · Tessa Smigla  
+**Course:** CMSI 3802 — Languages and Automata II
 
 ---
 
-## 4. Types
+## Features
 
-### 4.1 Primitive Types
-
-Forge v0.1 supports these primitive types:
-
-* `byte`
-* `char`
-* `snum`
-* `inum`
-* `lnum`
-* `fnum`
-* `dnum`
-* `hilo`
-* `empty`
-
-### 4.2 Type Meanings
-
-* `byte`: small integer storage
-* `char`: single character
-* `snum`: short integer
-* `inum`: standard integer
-* `lnum`: long integer
-* `fnum`: floating-point number
-* `dnum`: double-precision floating-point number
-* `hilo`: boolean-like truth value
-* `empty`: absence of a return value
-
-### 4.3 Type Inference
-
-Local variables may be inferred from their initializer.
-
-```forge
-let n = 3;       // inferred as inum
-let pi = 3.14;   // inferred as fnum or dnum, implementation-defined
-let ok = TT;     // inferred as hilo
-```
-
-### 4.4 Explicit Type Annotations
-
-Function parameters and return types are explicit.
-
-```forge
-func add(a: inum, b: inum): inum {
-  deliver a + b;
-}
-```
-
-Local variable annotations may also be supported:
-
-```forge
-let x: inum = 3;
-C y: dnum = 3.14;
-```
+- **Statically typed** — explicit function signatures, inferred local variables
+- **Expressive returns** — `resolve` for void returns, `deliver` for value returns
+- **Structured control flow** — `is`/`not` (if/else), `whenis` (while), `execute`/`whenis` (do-while), `whento` (for)
+- **Switch with `hub`** — pattern matching via `:{val}:` cases and `base` default
+- **First-class bit ops** — `bitand`, `bitor`, `bitxor`, `bitnot`, `shiftl`, `shiftr` and symbolic `&` / `|`
+- **Bit indexing** — read `x{n}`, set `x{n} = TT`, clear `x{n} = FF`
+- **Custom enum types** — `custom Direction = { North, South, East, West; }`
+- **Global objects** — `global config = { timeout: 5000 };`
+- **Boolean literals** — `TT` (true) and `FF` (false)
+- **Null literal** — `non`
+- **Immutable constants** — `C PI = 3.14;`
+- **Logical XOR / XNOR** — `^|` and `^&`
+- **Exponentiation** — `2 ^ 10`
+- **Widening type conversions** — `byte → snum → inum → lnum → fnum → dnum`
+- **Optimizer** — constant folding, dead branch elimination, identity simplification
+- **Compiles to JavaScript** — readable output, no runtime needed
 
 ---
 
-## 5. Type Conversion Rules
+## Types
 
-### 5.1 Implicit Widening Conversions
+| Forge Type | Meaning |
+|---|---|
+| `byte` | Small integer |
+| `char` | Single character |
+| `snum` | Short integer |
+| `inum` | Standard integer |
+| `lnum` | Long integer |
+| `fnum` | Single-precision float |
+| `dnum` | Double-precision float |
+| `hilo` | Boolean (`TT` / `FF`) |
+| `empty` | Void / no return value |
 
-Forge allows implicit widening conversions.
+---
 
-Examples:
+## Static Checks
 
-* `hilo -> inum`
-* `byte -> snum -> inum -> lnum`
-* `inum -> fnum -> dnum`
+Forge's analyzer enforces the following at compile time:
 
-### 5.2 Explicit Narrowing Conversions
+1. Undeclared identifier use → **error**
+2. Duplicate declarations in same scope → **error**
+3. Assignment to a constant (`C`) → **error**
+4. `resolve` in a non-`empty` function → **error**
+5. `deliver` in an `empty` function → **error**
+6. `escape` outside a loop or `hub` → **error**
+7. Wrong argument count in function call → **error**
+8. Wrong argument type in function call → **error**
+9. Incompatible types in assignment → **error**
+10. Invalid operator/type combination (e.g. `+` on booleans) → **error**
+11. Duplicate case labels in `hub` → **error**
+12. Bitwise operations on non-integer types → **error**
+13. `resolve`/`deliver` outside any function → **error**
+14. Bit index or bit set on non-integer variable → **error**
+15. Const reassignment via `+=`, `-=`, `*=`, `/=` → **error**
+16. Const modification via `++` / `--` → **error**
 
-Narrowing conversions require explicit casts.
+---
 
-Examples:
+## Example Programs
 
-* `dnum -> inum`
-* `lnum -> byte`
-* `inum -> hilo`
-
-### 5.3 `hilo` Numeric Resolution
-
-Forge defines:
-
-* `TT` resolves numerically to `1`
-* `FF` resolves numerically to `0`
-
-Therefore this is valid:
-
-```forge
-func foo(): inum {
-  deliver TT;
-}
-```
-
-### 5.4 Numeric to `hilo` Cast
-
-Casting a numeric value to `hilo` follows:
-
-* `0 -> FF`
-* any non-zero value -> `TT`
-
-Example:
+### Functions and Recursion
 
 ```forge
-func isPositive(v: inum): hilo {
-  is (v < 0) {
-    deliver FF;
+func factorial(n: inum): inum {
+  is (n <= 1) {
+    deliver 1;
   }
-  deliver (hilo) v;
+  deliver n * factorial(n - 1);
 }
-```
 
----
-
-## 6. Variables and Constants
-
-### 6.1 Mutable Variables
-
-Use `let` for mutable local variables.
-
-```forge
-let x = 3;
-x = x + 1;
-```
-
-### 6.2 Constants
-
-Use `C` for immutable bindings.
-
-```forge
-C y = 4;
-```
-
-A `C` binding:
-
-* must be initialized at declaration
-* may not be reassigned
-
----
-
-## 7. Globals
-
-Forge supports explicit globals via the `global` keyword.
-
-```forge
-global g = {
-  someValue: 1,
-  someString: "foo",
-  constantValue: 3.14
-};
-```
-
-Globals are accessed through field access:
-
-```forge
-g.someValue
-g.someString
-```
-
-Globals may be shadowed in inner scopes, but the analyzer should emit a warning.
-
----
-
-## 8. Scope Rules
-
-Forge uses block scope.
-
-A declaration exists only within the block in which it is declared.
-
-```forge
-is (TT) {
-  let x = 3;
-}
-// x is out of scope here
-```
-
-### 8.1 Shadowing
-
-Shadowing is allowed, but should generate a warning when an inner declaration hides an outer one.
-
-```forge
-let x = 1;
-is (TT) {
-  let x = 2; // allowed, but warn
-}
-```
-
----
-
-## 9. Functions
-
-### 9.1 Declaration
-
-Functions use `func`.
-
-```forge
-func add(a: inum, b: inum): inum {
-  deliver a + b;
-}
-```
-
-### 9.2 Parameters
-
-Parameters are explicitly typed.
-
-```forge
-func scale(v: dnum, factor: dnum): dnum {
-  deliver v * factor;
-}
-```
-
-### 9.3 Return Types
-
-Functions must declare an explicit return type.
-
-```forge
-func stop(): empty {
-  resolve;
-}
-```
-
-### 9.4 Return Statements
-
-Forge distinguishes between empty and valued return.
-
-#### Empty return
-
-```forge
-resolve;
-```
-
-#### Valued return
-
-```forge
-deliver expr;
-```
-
-### 9.5 Return Semantics
-
-* `resolve` is valid only inside functions returning `empty`
-* `deliver expr` is valid only inside functions returning a non-`empty` type
-* non-`empty` functions must return a value on all reachable paths
-
-### 9.6 Overloading
-
-Function overloading is permitted by arity only.
-
-Allowed:
-
-```forge
-func foo(): inum { deliver 1; }
-func foo(a: inum): inum { deliver a; }
-func foo(a: inum, b: inum): inum { deliver a + b; }
-```
-
-Not allowed:
-
-```forge
-func foo(a: inum): inum { deliver a; }
-func foo(a: dnum): dnum { deliver a; }
-```
-
----
-
-## 10. Control Flow
-
-### 10.1 If / Else
-
-Forge uses `is` and `not`.
-
-```forge
-is (x < y) {
-  deliver x;
-} not {
-  deliver y;
-}
-```
-
-### 10.2 While Loop
-
-Forge uses `whenis`.
-
-```forge
-whenis (x < 10) {
-  x = x + 1;
-}
-```
-
-### 10.3 Do-While Loop
-
-Forge uses `execute ... whenis`.
-
-```forge
-execute {
-  x = x + 1;
-} whenis (x < 10);
-```
-
-### 10.4 For Loop
-
-Forge uses `whento`.
-
-```forge
-whento (let i = 0; i < 10; i++) {
-  // loop body
-}
-```
-
-### 10.5 Break
-
-Forge uses `escape`.
-
-```forge
-escape;
-```
-
-`escape` is valid only inside:
-
-* `whenis`
-* `whento`
-* `hub`
-
----
-
-## 11. Switch Semantics
-
-Forge uses `hub`, `:{}:`, and `base`.
-
-```forge
-hub (x) {
-  :{1}: {
-    deliver 100;
-  }
-  :{2}: {
-    deliver 200;
-  }
-  base {
-    resolve;
-  }
-}
-```
-
-### 11.1 Case Rules
-
-* case labels must be compile-time constant expressions or literals
-* `base` is optional
-* at most one `base` clause may appear
-* `base` must be the last clause
-* no implicit fallthrough occurs between case blocks
-
-### 11.2 Valid `escape`
-
-`escape` is valid within `hub`.
-
----
-
-## 12. Expressions
-
-### 12.1 Arithmetic Operators
-
-Forge supports:
-
-* `+`
-* `-`
-* `*`
-* `/`
-* `%`
-* `^`
-
-Examples:
-
-```forge
-let sq = n ^ 2;
-let sum = a + b;
-let q = x / y;
-```
-
-### 12.2 Comparison Operators
-
-Forge supports:
-
-* `<`
-* `>`
-* `<=`
-* `>=`
-* `==`
-* `!=`
-
-### 12.3 Ternary Expression
-
-Forge supports standard ternary form:
-
-```forge
-(condition) ? (trueExpr) : (falseExpr)
-```
-
-Example:
-
-```forge
-let result = (x > 0) ? 1 : -1;
-```
-
----
-
-## 13. Logical Operators
-
-Forge uses symbolic logical operators.
-
-* `!` logical not
-* `&&` logical and
-* `||` logical or
-* `^|` logical xor
-* `^&` logical xnor
-
-### 13.1 Truth Tables
-
-#### `&&`
-
-| A  | B  | Result |
-| -- | -- | ------ |
-| TT | TT | TT     |
-| TT | FF | FF     |
-| FF | TT | FF     |
-| FF | FF | FF     |
-
-#### `||`
-
-| A  | B  | Result |
-| -- | -- | ------ |
-| TT | TT | TT     |
-| TT | FF | TT     |
-| FF | TT | TT     |
-| FF | FF | FF     |
-
-#### `^|`
-
-| A  | B  | Result |
-| -- | -- | ------ |
-| TT | TT | FF     |
-| TT | FF | TT     |
-| FF | TT | TT     |
-| FF | FF | FF     |
-
-#### `^&`
-
-| A  | B  | Result |
-| -- | -- | ------ |
-| TT | TT | TT     |
-| TT | FF | FF     |
-| FF | TT | FF     |
-| FF | FF | TT     |
-
----
-
-## 14. Bitwise Operations
-
-Forge supports three complementary styles of bit manipulation:
-
-* symbolic single-character bitwise operators
-* readable word-based bitwise operators
-* indexed bit access
-* mask helper functions
-
-### 14.1 Symbolic Bitwise Operators
-
-Single-character operators are bitwise.
-
-* `&` bitwise and
-* `|` bitwise or
-
-Examples:
-
-```forge
-x & y
-x | y
-```
-
-### 14.2 Word-Based Bitwise Operators
-
-Forge also supports readable word-based bitwise operators.
-
-* `bitand`
-* `bitor`
-* `bitxor`
-* `bitnot`
-* `shiftl`
-* `shiftr`
-
-Examples:
-
-```forge
-x bitand y
-x bitor y
-x bitxor y
-bitnot x
-x shiftl 2
-x shiftr 1
-```
-
-### 14.3 Indexed Bit Access
-
-Forge supports direct bit indexing using braces.
-
-```forge
-x{3}
-x{3} = TT
-x{3} = FF
-```
-
-Semantics:
-
-* `x{n}` reads bit `n` as `hilo`
-* assigning `TT` sets bit `n`
-* assigning `FF` clears bit `n`
-
-### 14.4 Mask Helpers
-
-Forge provides helper-style bit operations:
-
-* `hasbits(x, mask)`
-* `setbits(x, mask)`
-* `clearbits(x, mask)`
-* `togglebits(x, mask)`
-
-Examples:
-
-```forge
-hasbits(flags, 4)
-setbits(flags, 2)
-clearbits(flags, 8)
-togglebits(flags, 1)
-```
-
-### 14.5 Valid Operand Types
-
-Bitwise operations are valid on integer-like types only:
-
-* `byte`
-* `snum`
-* `inum`
-* `lnum`
-
-Bitwise operations are not valid on:
-
-* `fnum`
-* `dnum`
-* `hilo` unless explicitly cast
-* strings
-* custom enum payloads unless their underlying stored value is integer-compatible
-
----
-
-## 15. Arrays and Indexing
-
-### 15.1 Indexing
-
-Forge uses standard array indexing.
-
-```forge
-arr[0]
-arr[i]
-```
-
-### 15.2 Slicing
-
-Forge supports range indexing with inclusive start and exclusive end.
-
-```forge
-arr[0:arr.length]
-```
-
-### 15.3 Slice Semantics
-
-* start index is inclusive
-* end index is exclusive
-* valid for arrays
-* valid for strings
-
-### 15.4 Bounds Failure
-
-Out-of-range indexing behavior is implementation-defined in v0.1, but should be documented clearly by the compiler/runtime.
-
----
-
-## 16. Custom Types
-
-Forge uses `custom` for enum-like and value-associated custom types.
-
-### 16.1 Plain Custom Type
-
-```forge
-custom Color = {
-  Red, Green, Blue;
-}
-```
-
-### 16.2 Valued Custom Type
-
-```forge
-custom Token = {
-  Pi(3.14),
-  Count(21),
-  Enabled(TT),
-  Disabled(FF),
-  Roar("Roar!"),
-  Newline('\n');
-}
-```
-
-### 16.3 Semantic Rules
-
-* member names must be unique
-* optional payload must be a compile-time literal
-* members are addressable by:
-
-  * ordinal index
-  * member name
-  * payload value if lookup is unambiguous
-* invalid lookup returns `non`
-* ambiguous payload lookup also returns `non`
-
-### 16.4 Access Forms
-
-#### Dot access
-
-```forge
-let x = Token.Pi;
-```
-
-#### Ordinal lookup
-
-```forge
-let x = Token[0];
-```
-
-#### Name lookup
-
-```forge
-let x = Token["Pi"];
-```
-
-#### Value lookup
-
-```forge
-let x = Token[3.14];
-```
-
-### 16.5 Hub Compatibility
-
-Custom-type members may be used directly inside `hub` case labels, provided the case value is compile-time constant.
-
----
-
-## 17. Globals, Objects, and Field Access
-
-Forge supports field access using `.`.
-
-```forge
-g.someValue
-Token.Pi
-```
-
-Method access may use `->` when methods are introduced in later revisions.
-
----
-
-## 18. Static Analysis Requirements
-
-The Forge analyzer should detect at minimum:
-
-* undeclared identifier use
-* duplicate declarations in the same scope
-* shadowing warnings
-* assignment to constants
-* invalid use of `resolve`
-* invalid use of `deliver`
-* invalid use of `escape`
-* missing return in non-`empty` functions
-* wrong argument count in function calls
-* wrong argument types
-* incompatible assignment types
-* invalid operator/type combinations
-* duplicate case labels
-* multiple `base` clauses
-* non-constant case labels where disallowed
-* ambiguous custom-type payload lookup when statically knowable
-
----
-
-## 19. Examples
-
-### 19.1 Simple Function
-
-```forge
-func add(a: inum, b: inum): inum {
-  deliver a + b;
-}
-```
-
-### 19.2 Empty Function
-
-```forge
-func stop(): empty {
-  resolve;
-}
-```
-
-### 19.3 If / Else
-
-```forge
 func max(a: inum, b: inum): inum {
-  is (a > b) {
-    deliver a;
-  } not {
-    deliver b;
+  is (a > b) { deliver a; }
+  deliver b;
+}
+
+let result = factorial(5);
+let biggest = max(42, 17);
+```
+
+### Loops and Arithmetic
+
+```forge
+func sumTo(n: inum): inum {
+  let total = 0;
+  let i = 1;
+  whenis (i <= n) {
+    total += i;
+    i += 1;
+  }
+  deliver total;
+}
+
+func gcd(a: inum, b: inum): inum {
+  whenis (b != 0) {
+    let temp = b;
+    b = a % b;
+    a = temp;
+  }
+  deliver a;
+}
+```
+
+### Bit Operations
+
+```forge
+func testBit(x: inum, pos: inum): hilo {
+  deliver x{pos};
+}
+
+func countBits(x: inum): inum {
+  let count = 0;
+  let n = x;
+  whenis (n != 0) {
+    count += n & 1;
+    n = n shiftr 1;
+  }
+  deliver count;
+}
+
+let flags = 0;
+flags{0} = TT;
+flags{2} = TT;
+flags{2} = FF;
+```
+
+### Custom Types and Switch
+
+```forge
+custom Direction = { North, South, East, West; }
+custom Status    = { Ok(0), Warn(1), Err(2); }
+
+func describe(d: inum): inum {
+  hub (d) {
+    :{0}: { deliver Direction.North; }
+    :{1}: { deliver Direction.South; }
+    base  { deliver -1; }
   }
 }
 ```
 
-### 19.4 Globals
+### Globals and Field Access
 
 ```forge
-global g = {
-  someValue: 1,
-  someString: "foo",
-  constantValue: 3.14
+global config = {
+  maxRetries: 3,
+  timeout: 5000,
+  version: 1
 };
 
-func readGlobal(): inum {
-  deliver g.someValue;
-}
-```
-
-### 19.5 Custom Type
-
-```forge
-custom Token = {
-  Pi(3.14),
-  Count(21),
-  Enabled(TT);
+func clamp(val: inum, lo: inum, hi: inum): inum {
+  is (val < lo) { deliver lo; }
+  is (val > hi) { deliver hi; }
+  deliver val;
 }
 
-func getPi(): dnum {
-  deliver Token.Pi;
-}
-```
-
-### 19.6 Bit Access
-
-```forge
-let flags = 0;
-flags{3} = TT;
-flags{1} = TT;
-flags = flags shiftl 1;
-```
-
-### 19.7 Do-While
-
-```forge
-let n = 0;
-
-execute {
-  n = n + 1;
-} whenis (n < 5);
+let retries = config.maxRetries;
+let v = clamp(150, 0, 100);
 ```
 
 ---
 
-## 20. Future Work
+## Generated JavaScript
 
-Potential future additions for Forge include:
+Given this Forge program:
 
-* `blueprint` classes
-* inheritance through `inherits`
-* visibility modifiers (`secret`, `heirs`, `overt`)
-* exceptions with `test`, `onError`, and `after`
-* async workflows with `async` and `await`
-* interfaces via `formed`
+```forge
+func factorial(n: inum): inum {
+  is (n <= 1) {
+    deliver 1;
+  }
+  deliver n * factorial(n - 1);
+}
 
-These features are not required for Forge v0.1.
+func isEven(n: inum): hilo {
+  deliver (n % 2) == 0;
+}
+
+let result = factorial(5);
+let check = isEven(result);
+```
+
+Forge compiles it to:
+
+```js
+function factorial(n) {
+  if ((n <= 1)) {
+    return 1
+  }
+  return (n * factorial((n - 1)))
+}
+function isEven(n) {
+  return ((n % 2) == 0)
+}
+let result = factorial(5)
+let check = isEven(result)
+```
 
 ---
 
-## 21. Summary
+## Setup
 
-Forge v0.1 provides:
+**Requirements:** Node.js 18+
 
-* statically checked functions
-* explicit return semantics
-* structured control flow
-* custom typed enums
-* global namespaces
-* array indexing and slicing
-* expressive and readable bit operations
+```bash
+git clone https://github.com/JohhannasReyn/Forge
+cd Forge
+npm install
+```
 
-Forge is designed to be both analyzable and expressive, with a syntax that supports real compiler construction and meaningful static analysis.
+---
+
+## Running the Compiler
+
+```bash
+node src/forge.js --check    <file.forge>   # syntax check only
+node src/forge.js --parse    <file.forge>   # parse and print AST
+node src/forge.js --analyze  <file.forge>   # analyze and print annotated AST
+node src/forge.js --optimize <file.forge>   # optimize and print AST
+node src/forge.js --generate <file.forge>   # compile to JavaScript
+```
+
+Example:
+
+```bash
+node src/forge.js --generate examples/math.forge
+```
+
+---
+
+## Testing
+
+```bash
+npm test
+```
+
+Runs 349 tests with coverage via [c8](https://github.com/bcoe/c8) and [Mocha](https://mochajs.org/).
+
+Current coverage: **99.8% statements · 96.89% branches · 96.72% functions**
+
+---
+
+## Project Structure
+
+```
+src/
+  forge.js       CLI entry point
+  forge.ohm      Ohm.js grammar
+  parser.js      Parse tree → AST
+  core.js        AST node factories and types
+  analyzer.js    Static analysis (16 checks)
+  optimizer.js   Constant folding and dead code elimination
+  generator.js   AST → JavaScript
+  compiler.js    Pipeline orchestrator
+test/
+  parser.test.js
+  analyzer.test.js
+  optimizer.test.js
+  generator.test.js
+  compiler.test.js
+examples/
+  hello.forge    Functions, if/else, recursion
+  math.forge     Loops, for, GCD
+  bitops.forge   Bit operations and indexing
+  enum.forge     Custom types and hub/switch
+  globals.forge  Global objects and field access
+```
+
+---
+
+## License
+
+MIT © Nitya Addanki, Tessa Smigla
