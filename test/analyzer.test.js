@@ -87,6 +87,18 @@ describe("Analyzer", () => {
     it("accepts hub with cases", () => ok("let x = 1; hub (x) { :{1}: { let a = 1; } }"))
     it("rejects duplicate case labels", () => bad("let x = 1; hub (x) { :{1}: { } :{1}: { } }", /Duplicate/))
     it("accepts hub with base", () => ok("let x = 1; hub (x) { :{1}: { } base { } }"))
+    it("rejects variable as case label", () =>
+      bad("let x = 1; let y = 2; hub (x) { :{y}: { } }", /constant/i))
+    it("rejects binary expression as case label", () =>
+      bad("let x = 1; hub (x) { :{1 + 1}: { } }", /constant/i))
+    it("rejects function call as case label", () =>
+      bad("func f(): inum { deliver 1; } let x = 1; hub (x) { :{f()}: { } }", /constant/i))
+    it("accepts integer literal as case label", () =>
+      ok("let x = 1; hub (x) { :{42}: { } }"))
+    it("accepts bool literal as case label", () =>
+      ok("let x = TT; hub (x) { :{TT}: { } }"))
+    it("accepts string literal as case label", () =>
+      ok('let x = "hi"; hub (x) { :{"hello"}: { } }'))
   })
 
   describe("control flow conditions", () => {

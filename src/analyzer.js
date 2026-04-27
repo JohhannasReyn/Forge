@@ -29,6 +29,10 @@ function must(condition, message) {
   if (!condition) throw new Error(message)
 }
 
+function isConstantExpr(node) {
+  return ["IntLit", "FloatLit", "BoolLit", "StringLit", "CharLit"].includes(node.kind)
+}
+
 function typeOf(node) {
   return node.type ?? core.ANY
 }
@@ -211,6 +215,7 @@ const stmtHandlers = {
     const seen = new Set()
     for (const c of node.cases) {
       analyzeExpr(c.test, ctx)
+      must(isConstantExpr(c.test), "Case label in hub must be a constant expression")
       const key = JSON.stringify(c.test)
       must(!seen.has(key), "Duplicate case label in hub")
       seen.add(key)
