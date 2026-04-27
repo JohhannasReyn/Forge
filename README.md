@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="public/Images/Logo.webp" alt="Forge Logo" width="250"/>
+  <img src="docs/images/Logo.webp" alt="Forge Logo" width="250"/>
 </p>
 
 <h1 align="center">Forge</h1>
