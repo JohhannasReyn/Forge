@@ -29,6 +29,10 @@ function must(condition, message) {
   if (!condition) throw new Error(message)
 }
 
+function isConstantExpr(node) {
+  return ["IntLit", "FloatLit", "BoolLit", "StringLit", "CharLit"].includes(node.kind)
+}
+
 function typeOf(node) {
   return node.type ?? core.ANY
 }
@@ -43,6 +47,30 @@ function analyzeExpr(node, ctx) {
   const handler = exprHandlers[node.kind]
   if (!handler) throw new Error(`Unknown expression kind: ${node.kind}`)
   return handler(node, ctx)
+}
+
+function blockAlwaysReturns(block) {
+  for (const stmt of block.statements) {
+    if (stmtAlwaysReturns(stmt)) return true
+  }
+  return false
+}
+
+function stmtAlwaysReturns(stmt) {
+  if (stmt.kind === "ReturnStmt" && stmt.expression !== null) return true
+  if (stmt.kind === "IfStmt") {
+    return (
+      stmt.alternate !== null &&
+      blockAlwaysReturns(stmt.consequent) &&
+      blockAlwaysReturns(stmt.alternate)
+    )
+  }
+  if (stmt.kind === "SwitchStmt") {
+    if (!stmt.defaultCase) return false
+    if (!blockAlwaysReturns(stmt.defaultCase)) return false
+    return stmt.cases.every(c => blockAlwaysReturns(c.body))
+  }
+  return false
 }
 
 const stmtHandlers = {
@@ -60,6 +88,12 @@ const stmtHandlers = {
       inner.add(p.name, { kind: "Variable", name: p.name, type: p.type, readOnly: false })
     }
     stmtHandlers.Block(node.body, inner)
+    if (node.returnType !== core.EMPTY) {
+      must(
+        blockAlwaysReturns(node.body),
+        `Missing return: function '${node.name}' does not return a value on all code paths`
+      )
+    }
     return node
   },
 
@@ -183,11 +217,14 @@ const stmtHandlers = {
     const seen = new Set()
     for (const c of node.cases) {
       analyzeExpr(c.test, ctx)
+      must(isConstantExpr(c.test), "Case label in hub must be a constant expression")
       const key = JSON.stringify(c.test)
       must(!seen.has(key), "Duplicate case label in hub")
       seen.add(key)
       stmtHandlers.Block(c.body, ctx.child({ inSwitch: true }))
     }
+    // Check 14: grammar enforces at most one DefaultClause via DefaultClause?
+    // so node.defaultCase is always null or a single Block here.
     if (node.defaultCase) stmtHandlers.Block(node.defaultCase, ctx.child({ inSwitch: true }))
     return node
   },

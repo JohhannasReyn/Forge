@@ -94,6 +94,18 @@ describe("Analyzer", () => {
     it("rejects duplicate case labels", () =>
       bad("let x = 1; hub (x) { :{1}: { } :{1}: { } }", /Duplicate/))
     it("accepts hub with base", () => ok("let x = 1; hub (x) { :{1}: { } base { } }"))
+    it("rejects variable as case label", () =>
+      bad("let x = 1; let y = 2; hub (x) { :{y}: { } }", /constant/i))
+    it("rejects binary expression as case label", () =>
+      bad("let x = 1; hub (x) { :{1 + 1}: { } }", /constant/i))
+    it("rejects function call as case label", () =>
+      bad("func f(): inum { deliver 1; } let x = 1; hub (x) { :{f()}: { } }", /constant/i))
+    it("accepts integer literal as case label", () =>
+      ok("let x = 1; hub (x) { :{42}: { } }"))
+    it("accepts bool literal as case label", () =>
+      ok("let x = TT; hub (x) { :{TT}: { } }"))
+    it("accepts string literal as case label", () =>
+      ok('let x = "hi"; hub (x) { :{"hello"}: { } }'))
   })
 
   describe("control flow conditions", () => {
@@ -184,5 +196,43 @@ describe("Analyzer", () => {
     it("builds array types", () => {
       assert.deepEqual(arrayType(INUM), { kind: "array", base: INUM })
     })
+  })
+
+  describe("check 8: missing return in non-empty function", () => {
+    it("rejects empty body in inum function", () =>
+      bad("func f(): inum { }", /missing return/i))
+    it("rejects body with no deliver", () =>
+      bad("func f(): inum { let x = 1; }", /missing return/i))
+    it("rejects if-only return (no else)", () =>
+      bad("func f(): inum { is (TT) { deliver 1; } }", /missing return/i))
+    it("rejects if/else where only one branch returns", () =>
+      bad("func f(): inum { is (TT) { deliver 1; } not { let x = 2; } }", /missing return/i))
+    it("accepts deliver at end of body", () =>
+      ok("func f(): inum { deliver 1; }"))
+    it("accepts deliver inside if/else both branches", () =>
+      ok("func f(): inum { is (TT) { deliver 1; } not { deliver 2; } }"))
+    it("does NOT require return in empty function", () =>
+      ok("func f(): empty { }"))
+    it("does NOT require return in empty function with resolve", () =>
+      ok("func f(): empty { resolve; }"))
+    it("accepts deliver after let statement", () =>
+      ok("func f(): inum { let x = 1; deliver x; }"))
+    it("accepts hub with all cases and base returning", () =>
+      ok(`func f(): inum {
+      let x = 1;
+      hub (x) { :{1}: { deliver 1; } :{2}: { deliver 2; } base { deliver 0; } }
+    }`))
+    it("rejects hub that has cases returning but no base", () =>
+      bad(`func f(): inum {
+      let x = 1;
+      hub (x) { :{1}: { deliver 1; } }
+    }`, /missing return/i))
+    it("rejects function with deliver only inside a loop", () =>
+      bad("func f(): inum { whenis (TT) { deliver 1; } }", /missing return/i))
+    it("rejects hub where base clause does not return", () =>
+      bad(`func f(): inum {
+    let x = 1;
+    hub (x) { :{1}: { deliver 1; } base { let y = 2; } }
+  }`, /missing return/i))
   })
 })

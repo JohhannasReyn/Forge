@@ -71,6 +71,8 @@ describe("Parser", () => {
     it("parses hub with base", () =>
       ok("let x = 1; hub (x) { :{1}: { let a = 1; } base { let b = 0; } }"))
     it("parses hub with no cases", () => ok("let x = 1; hub (x) { base { let b = 0; } }"))
+    it("rejects duplicate base clauses (grammar enforcement)", () =>
+      bad("let x = 1; hub (x) { base { } base { } }"))
   })
 
   describe("expressions", () => {
