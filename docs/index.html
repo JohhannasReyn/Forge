@@ -95,3 +95,31 @@
 </section>
 
 <hr class="section-rule">
+
+<!-- STATIC CHECKS -->
+<section id="checks">
+  <div class="container">
+    <h2>Static Analysis</h2>
+    <p style="margin-bottom:1.5rem;font-size:0.95rem;color:#555;">Forge enforces thirteen constraints at compile time. Three additional checks are planned but not yet implemented.</p>
+    <ul class="checks-list">
+      <li><span class="check-num">1</span><span class="check-label">Undeclared identifier use</span><span class="badge badge-enforced">Enforced</span></li>
+      <li><span class="check-num">2</span><span class="check-label">Duplicate declarations in same scope</span><span class="badge badge-enforced">Enforced</span></li>
+      <li><span class="check-num">3</span><span class="check-label">Assignment to constants (<code>C</code>)</span><span class="badge badge-enforced">Enforced</span></li>
+      <li><span class="check-num">4</span><span class="check-label"><code>resolve</code> used in a non-void function</span><span class="badge badge-enforced">Enforced</span></li>
+      <li><span class="check-num">5</span><span class="check-label"><code>deliver</code> used in a void function</span><span class="badge badge-enforced">Enforced</span></li>
+      <li><span class="check-num">6</span><span class="check-label"><code>escape</code> used outside a loop or <code>hub</code></span><span class="badge badge-enforced">Enforced</span></li>
+      <li><span class="check-num">7</span><span class="check-label">Wrong argument count in function calls</span><span class="badge badge-enforced">Enforced</span></li>
+      <li><span class="check-num">8</span><span class="check-label">Wrong argument types in function calls</span><span class="badge badge-enforced">Enforced</span></li>
+      <li><span class="check-num">9</span><span class="check-label">Incompatible assignment types</span><span class="badge badge-enforced">Enforced</span></li>
+      <li><span class="check-num">10</span><span class="check-label">Invalid operator/type combinations</span><span class="badge badge-enforced">Enforced</span></li>
+      <li><span class="check-num">11</span><span class="check-label">Duplicate case labels in <code>hub</code></span><span class="badge badge-enforced">Enforced</span></li>
+      <li><span class="check-num">12</span><span class="check-label">Bitwise operations on non-integer types</span><span class="badge badge-enforced">Enforced</span></li>
+      <li><span class="check-num">13</span><span class="check-label">Type widening rules (e.g. <code>hilo</code> → <code>inum</code>)</span><span class="badge badge-enforced">Enforced</span></li>
+      <li><span class="check-num">14</span><span class="check-label">Missing return in non-void functions</span><span class="badge badge-pending">Not yet enforced</span></li>
+      <li><span class="check-num">15</span><span class="check-label">Multiple <code>base</code> clauses in <code>hub</code> (grammar prevents it structurally)</span><span class="badge badge-pending">Not yet enforced</span></li>
+      <li><span class="check-num">16</span><span class="check-label">Non-constant case label expressions</span><span class="badge badge-pending">Not yet enforced</span></li>
+    </ul>
+  </div>
+</section>
+
+<hr class="section-rule">
