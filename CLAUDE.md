@@ -106,7 +106,7 @@ Deliverables required:
 | Group of 3–6 students | Need team member names — add to package.json author field |
 | Original language, sufficient complexity | Forge — statically typed, multiple static checks |
 | Complete functional compiler | Parser + analyzer + optimizer + generator + CLI — **DONE** |
-| 100% test coverage | 349 tests, 99.8% stmt, 96.89% branch coverage — **NEAR COMPLETE** |
+| 100% test coverage | 369 tests, 99.81% stmt, 97.21% branch coverage — **NEAR COMPLETE** |
 | Public GitHub repo | https://github.com/JohhannasReyn/Forge |
 | Companion website (GitHub Pages) | **MISSING** — Day 9 task |
 | 5-minute lightning talk | **MISSING** — Day 10 task |
@@ -121,14 +121,14 @@ Deliverables required:
 5. ✅ Invalid use of `resolve` (only in `empty` functions) → error
 6. ✅ Invalid use of `deliver` (only in non-`empty` functions) → error
 7. ✅ Invalid use of `escape` (only inside loops or `hub`) → error
-8. ⚠️ Missing return in non-`empty` functions → NOT checked (analyzer doesn't enforce)
+8. ✅ Missing return in non-`empty` functions → enforced (all code paths must `deliver`)
 9. ✅ Wrong argument count in function calls → error
 10. ✅ Wrong argument types in function calls → error
 11. ✅ Incompatible assignment types → error
 12. ✅ Invalid operator/type combinations → error
 13. ✅ Duplicate case labels in `hub` → error
-14. ⚠️ Multiple `base` clauses → NOT checked (grammar allows only one via `DefaultClause?`)
-15. ⚠️ Non-constant case label expressions → NOT checked
+14. ✅ Multiple `base` clauses → enforced by grammar (`DefaultClause?`) + parser test documents this
+15. ✅ Non-constant case label expressions → error (only literals allowed as case labels)
 16. ✅ Bitwise ops on non-integer types → error
 
 ---
@@ -279,9 +279,6 @@ Directory does not yet exist.
 
 | Risk | Severity | Notes |
 |---|---|---|
-| Static check 8 (missing return) not implemented | MEDIUM | Analyzer doesn't enforce returns in all branches |
-| Static check 14 (multiple base clauses) not implemented | LOW | Grammar prevents it structurally |
-| Static check 15 (non-constant case labels) not implemented | LOW | Low assignment priority |
 | Team member names unknown | MEDIUM | Required in README, package.json, website, affidavits |
 | Website/GH Pages not set up | MEDIUM | Day 9 task — 6 days away |
 | README needs conversion from spec to project format | LOW | Day 8 task |
@@ -331,39 +328,35 @@ node src/forge.js --generate examples/globals.forge
 
 ## Latest Session Notes
 
-**Date:** 2026-04-24 (Session 2)
+**Date:** 2026-04-26 (Session 3)
 
 **Changed files:**
-- `src/generator.js` — Fixed bug: exponent `^` now maps to `**` (was incorrectly falling through to `^` which is XOR in JS)
-- `src/analyzer.js` — Fixed bug: function parameters now have `readOnly: false` (were incorrectly `readOnly: true`, breaking parameter reassignment like in GCD)
-- `examples/math.forge` — Fixed: renamed `base` parameter to `b` (`base` is a reserved keyword in Forge)
-- `test/generator.test.js` — CREATED: 87 tests covering all generator output cases
-- `test/optimizer.test.js` — CREATED: 75 tests covering constant folding, identities, dead branches, pass-throughs
-- `test/compiler.test.js` — REPLACED placeholder with 47 real integration tests
+- `src/analyzer.js` — implemented checks 8, 14, 15: added `blockAlwaysReturns`, `stmtAlwaysReturns`, `isConstantExpr` helpers; FuncDecl missing-return assertion; SwitchStmt constant-label assertion; check-14 comment
+- `test/analyzer.test.js` — added 20 new tests (11 for check 8, 3 bad + 6 ok for check 15)
+- `test/parser.test.js` — added 1 test documenting grammar-enforced single base clause
 
 **Verification results:**
-- `npm test`: 349 passing, 0 failing (191ms)
-- Coverage: 99.8% statements, 96.89% branches, 96.72% functions
-- `--check` on all 5 examples: PASS
-- `--analyze` on all 5 examples: PASS
-- `--optimize` on all 5 examples: PASS
-- `--generate` on all 5 examples: PASS (valid JS output)
+- `npm test`: 369 passing, 0 failing (459ms)
+- Coverage: 99.81% statements, 97.21% branches, 97.12% functions, 99.81% lines
+- `--generate` on all 5 examples: PASS
 
-**Bugs fixed this session:**
-1. Exponent `^` operator was generating JS `^` (XOR) instead of `**` (exponentiation)
-2. Function parameters were immutable (prevented GCD-style reassignment)
-3. `math.forge` used `base` as a parameter name (reserved keyword)
+**Static checks now complete:**
+- Check 8: all code paths in non-empty functions must deliver
+- Check 14: grammar-enforced, documented with parser test
+- Check 15: hub case labels must be constant expressions (literals only)
+
+**Advisory note:**
+- `NullLit` (`non`) is not in the `isConstantExpr` allowed list — using `non` as a hub case label will produce a misleading error. Team should decide whether to allow it.
 
 **Blockers:**
 - Team member names unknown (needed for package.json, README, website, affidavits)
 
 **Next best tasks (priority order):**
 1. Add missing README sections: logo img tag, setup/test instructions, generated JS sample, link to GitHub Pages
-2. Implement static check 8: missing return enforcement in non-empty functions
-3. Create `docs/` companion website (HTML + CSS, one page)
-4. Add team member names to package.json author field once known
-5. Create presentation slides (5 min lightning talk)
-6. Run `npm test` + coverage again after any changes to verify 0 failures
+2. Create `docs/` companion website (HTML + CSS, one page)
+3. Add team member names to package.json author field once known
+4. Create presentation slides (5 min lightning talk)
+5. Run `npm test` + coverage again after any changes to verify 0 failures
 
 **Next prompt to run:**
-"Continue Forge compiler work. Read CLAUDE.md first. Priority: (1) Add missing README sections including logo, setup instructions, and a generated JS sample. (2) Create the docs/ companion website as a single-page HTML file with CSS. (3) If time permits, add missing return enforcement (static check 8). Run verification commands after each major change."
+"Continue Forge compiler work. Read CLAUDE.md first. Priority: (1) Add missing README sections including logo, setup instructions, and a generated JS sample. (2) Create the docs/ companion website as a single-page HTML file with CSS. Run verification commands after each major change."
