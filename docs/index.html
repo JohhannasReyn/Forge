@@ -611,5 +611,30 @@ let maxR = config.maxRetries</pre></div>
   </div>
 </footer>
 
+<script>
+(function () {
+  // Top-level example tabs (Hello / Math / Bitops / Enum / Globals)
+  document.querySelectorAll('.example-tab').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var container = btn.closest('.examples-container');
+      container.querySelectorAll('.example-tab').forEach(function (t) { t.classList.remove('active'); });
+      container.querySelectorAll('.example-panel').forEach(function (p) { p.classList.remove('active'); });
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.panel).classList.add('active');
+    });
+  });
+
+  // Code sub-tabs (Forge | JavaScript) within each panel
+  document.querySelectorAll('.code-tab').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var panel = btn.closest('.example-panel');
+      panel.querySelectorAll('.code-tab').forEach(function (t) { t.classList.remove('active'); });
+      panel.querySelectorAll('.code-pane').forEach(function (p) { p.classList.remove('active'); });
+      btn.classList.add('active');
+      panel.querySelector('.' + btn.dataset.pane).classList.add('active');
+    });
+  });
+})();
+</script>
 </body>
 </html>
