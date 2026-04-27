@@ -4,9 +4,9 @@ class Context {
   constructor(parent = null, opts = {}) {
     this.parent = parent
     this.locals = new Map()
-    this.inLoop = opts.inLoop ?? (parent?.inLoop ?? false)
-    this.inSwitch = opts.inSwitch ?? (parent?.inSwitch ?? false)
-    this.returnType = opts.returnType ?? (parent?.returnType ?? null)
+    this.inLoop = opts.inLoop ?? parent?.inLoop ?? false
+    this.inSwitch = opts.inSwitch ?? parent?.inSwitch ?? false
+    this.returnType = opts.returnType ?? parent?.returnType ?? null
   }
 
   add(name, entity) {
@@ -85,11 +85,16 @@ const stmtHandlers = {
     if (node.type) {
       must(
         core.isAssignableTo(initType, node.type),
-        `Type mismatch in declaration of ${node.name}: cannot assign ${initType.kind} to ${node.type.kind}`
+        `Type mismatch in declaration of ${node.name}: cannot assign ${initType.kind} to ${node.type.kind}`,
       )
     }
     node.type = declaredType
-    ctx.add(node.name, { kind: "Variable", name: node.name, type: declaredType, readOnly: node.readOnly })
+    ctx.add(node.name, {
+      kind: "Variable",
+      name: node.name,
+      type: declaredType,
+      readOnly: node.readOnly,
+    })
     return node
   },
 
@@ -100,7 +105,7 @@ const stmtHandlers = {
     if (entity.type && entity.type !== core.ANY) {
       must(
         core.isAssignableTo(valType, entity.type),
-        `Type mismatch in assignment to ${node.target}: cannot assign ${valType.kind} to ${entity.type.kind}`
+        `Type mismatch in assignment to ${node.target}: cannot assign ${valType.kind} to ${entity.type.kind}`,
       )
     }
     return node
@@ -123,16 +128,13 @@ const stmtHandlers = {
   ReturnStmt(node, ctx) {
     must(ctx.returnType !== null, "return statement outside of function")
     if (node.expression === null) {
-      must(
-        ctx.returnType === core.EMPTY,
-        "resolve can only be used in functions returning empty"
-      )
+      must(ctx.returnType === core.EMPTY, "resolve can only be used in functions returning empty")
     } else {
       must(ctx.returnType !== core.EMPTY, "deliver cannot be used in functions returning empty")
       const t = typeOf(analyzeExpr(node.expression, ctx))
       must(
         core.isAssignableTo(t, ctx.returnType),
-        `Return type mismatch: cannot return ${t.kind} from function returning ${ctx.returnType.kind}`
+        `Return type mismatch: cannot return ${t.kind} from function returning ${ctx.returnType.kind}`,
       )
     }
     return node
@@ -147,7 +149,7 @@ const stmtHandlers = {
     const condType = typeOf(analyzeExpr(node.condition, ctx))
     must(
       condType === core.HILO || core.isAssignableTo(condType, core.HILO),
-      `Condition must be hilo, got ${condType.kind}`
+      `Condition must be hilo, got ${condType.kind}`,
     )
     stmtHandlers.Block(node.consequent, ctx.child())
     if (node.alternate) stmtHandlers.Block(node.alternate, ctx.child())
@@ -234,14 +236,26 @@ const exprHandlers = {
     const numOps = ["+", "-", "*", "/", "%", "^"]
     const cmpOps = ["<", ">", "<=", ">=", "==", "!="]
     if (bitOps.includes(node.op)) {
-      must(core.isIntegerType(lt), `Left operand of ${node.op} must be an integer type, got ${lt.kind}`)
-      must(core.isIntegerType(rt), `Right operand of ${node.op} must be an integer type, got ${rt.kind}`)
+      must(
+        core.isIntegerType(lt),
+        `Left operand of ${node.op} must be an integer type, got ${lt.kind}`,
+      )
+      must(
+        core.isIntegerType(rt),
+        `Right operand of ${node.op} must be an integer type, got ${rt.kind}`,
+      )
       node.type = lt
     } else if (logicOps.includes(node.op)) {
       node.type = core.HILO
     } else if (numOps.includes(node.op)) {
-      must(core.isNumericType(lt) || lt === core.ANY, `Left operand of ${node.op} must be numeric, got ${lt.kind}`)
-      must(core.isNumericType(rt) || rt === core.ANY, `Right operand of ${node.op} must be numeric, got ${rt.kind}`)
+      must(
+        core.isNumericType(lt) || lt === core.ANY,
+        `Left operand of ${node.op} must be numeric, got ${lt.kind}`,
+      )
+      must(
+        core.isNumericType(rt) || rt === core.ANY,
+        `Right operand of ${node.op} must be numeric, got ${rt.kind}`,
+      )
       node.type = core.isAssignableTo(lt, rt) ? rt : lt
     } else if (cmpOps.includes(node.op)) {
       node.type = core.HILO
@@ -255,7 +269,10 @@ const exprHandlers = {
     if (node.op === "!") {
       node.type = core.HILO
     } else if (node.op === "bitnot") {
-      must(core.isIntegerType(t) || t === core.ANY, `bitnot requires integer operand, got ${t.kind}`)
+      must(
+        core.isIntegerType(t) || t === core.ANY,
+        `bitnot requires integer operand, got ${t.kind}`,
+      )
       node.type = t
     } else {
       node.type = t
@@ -284,13 +301,13 @@ const exprHandlers = {
     must(entity.kind === "Function", `${node.callee} is not a function`)
     must(
       node.args.length === entity.params.length,
-      `${node.callee} expects ${entity.params.length} argument(s), got ${node.args.length}`
+      `${node.callee} expects ${entity.params.length} argument(s), got ${node.args.length}`,
     )
     for (let i = 0; i < node.args.length; i++) {
       const argType = typeOf(analyzeExpr(node.args[i], ctx))
       must(
         core.isAssignableTo(argType, entity.params[i].type),
-        `Argument ${i + 1} type mismatch in call to ${node.callee}: expected ${entity.params[i].type.kind}, got ${argType.kind}`
+        `Argument ${i + 1} type mismatch in call to ${node.callee}: expected ${entity.params[i].type.kind}, got ${argType.kind}`,
       )
     }
     node.type = entity.returnType
@@ -305,7 +322,10 @@ const exprHandlers = {
 
   BitIndexExp(node, ctx) {
     const entity = ctx.lookup(node.name)
-    must(core.isIntegerType(entity.type) || entity.type === core.ANY, `Bit index requires integer: ${node.name}`)
+    must(
+      core.isIntegerType(entity.type) || entity.type === core.ANY,
+      `Bit index requires integer: ${node.name}`,
+    )
     analyzeExpr(node.index, ctx)
     node.type = core.HILO
     return node
@@ -332,12 +352,24 @@ const exprHandlers = {
     return node
   },
 
-  IntLit(node) { return node },
-  FloatLit(node) { return node },
-  BoolLit(node) { return node },
-  StringLit(node) { return node },
-  CharLit(node) { return node },
-  NullLit(node) { return node },
+  IntLit(node) {
+    return node
+  },
+  FloatLit(node) {
+    return node
+  },
+  BoolLit(node) {
+    return node
+  },
+  StringLit(node) {
+    return node
+  },
+  CharLit(node) {
+    return node
+  },
+  NullLit(node) {
+    return node
+  },
 }
 
 export function analyze(program) {

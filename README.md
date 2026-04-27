@@ -18,7 +18,7 @@
 
 ## The Story
 
-Forge was built as a language that reads like intent. Where other languages bolt on features, Forge starts from the question: *what should code say?* Returns are either `resolve` (nothing to give back) or `deliver` (here is the result). Loops come in three forms — `whenis`, `execute/whenis`, and `whento` — each chosen for what it communicates about the iteration pattern. Bit manipulation is first-class: index individual bits with `x{n}`, set them with `x{n} = TT`, and clear them with `x{n} = FF`. The type system is explicit at function boundaries and inferred everywhere else. Forge compiles to clean JavaScript so your programs run anywhere.
+Forge was built as a language that reads like intent. Where other languages bolt on features, Forge starts from the question: _what should code say?_ Returns are either `resolve` (nothing to give back) or `deliver` (here is the result). Loops come in three forms — `whenis`, `execute/whenis`, and `whento` — each chosen for what it communicates about the iteration pattern. Bit manipulation is first-class: index individual bits with `x{n}`, set them with `x{n} = TT`, and clear them with `x{n} = FF`. The type system is explicit at function boundaries and inferred everywhere else. Forge compiles to clean JavaScript so your programs run anywhere.
 
 **Authors:** Nitya Addanki · Tessa Smigla  
 **Course:** CMSI 3802 — Languages and Automata II
@@ -48,17 +48,17 @@ Forge was built as a language that reads like intent. Where other languages bolt
 
 ## Types
 
-| Forge Type | Meaning |
-|---|---|
-| `byte` | Small integer |
-| `char` | Single character |
-| `snum` | Short integer |
-| `inum` | Standard integer |
-| `lnum` | Long integer |
-| `fnum` | Single-precision float |
-| `dnum` | Double-precision float |
-| `hilo` | Boolean (`TT` / `FF`) |
-| `empty` | Void / no return value |
+| Forge Type | Meaning                |
+| ---------- | ---------------------- |
+| `byte`     | Small integer          |
+| `char`     | Single character       |
+| `snum`     | Short integer          |
+| `inum`     | Standard integer       |
+| `lnum`     | Long integer           |
+| `fnum`     | Single-precision float |
+| `dnum`     | Double-precision float |
+| `hilo`     | Boolean (`TT` / `FF`)  |
+| `empty`    | Void / no return value |
 
 ---
 
@@ -212,13 +212,13 @@ Forge compiles it to:
 
 ```js
 function factorial(n) {
-  if ((n <= 1)) {
+  if (n <= 1) {
     return 1
   }
-  return (n * factorial((n - 1)))
+  return n * factorial(n - 1)
 }
 function isEven(n) {
-  return ((n % 2) == 0)
+  return n % 2 == 0
 }
 let result = factorial(5)
 let check = isEven(result)

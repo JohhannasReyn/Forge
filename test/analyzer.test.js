@@ -17,7 +17,8 @@ describe("Analyzer", () => {
     it("accepts typed let", () => ok("let x: inum = 1;"))
     it("accepts typed const", () => ok("C x: dnum = 3.14;"))
     it("rejects duplicate variable", () => bad("let x = 1; let x = 2;", /already declared/))
-    it("accepts same name in different scopes", () => ok("is (TT) { let x = 1; } is (TT) { let x = 2; }"))
+    it("accepts same name in different scopes", () =>
+      ok("is (TT) { let x = 1; } is (TT) { let x = 2; }"))
     it("rejects type mismatch in declaration", () => bad("let x: hilo = 42;", /mismatch/i))
   })
 
@@ -35,9 +36,11 @@ describe("Analyzer", () => {
   describe("functions", () => {
     it("accepts empty function", () => ok("func f(): empty { resolve; }"))
     it("accepts valued function", () => ok("func f(): inum { deliver 1; }"))
-    it("accepts function call with correct args", () => ok("func add(a: inum, b: inum): inum { deliver a; } let x = add(1, 2);"))
+    it("accepts function call with correct args", () =>
+      ok("func add(a: inum, b: inum): inum { deliver a; } let x = add(1, 2);"))
     it("rejects wrong arg count", () => bad("func f(a: inum): inum { deliver a; } f();", /expects/))
-    it("rejects wrong arg type", () => bad("func f(a: hilo): hilo { deliver a; } f(42);", /mismatch/i))
+    it("rejects wrong arg type", () =>
+      bad("func f(a: hilo): hilo { deliver a; } f(42);", /mismatch/i))
     it("rejects resolve in valued function", () => bad("func f(): inum { resolve; }", /resolve/))
     it("rejects deliver in empty function", () => bad("func f(): empty { deliver 1; }", /deliver/))
     it("rejects return type mismatch", () => bad("func f(): hilo { deliver 1; }", /mismatch/i))
@@ -67,15 +70,18 @@ describe("Analyzer", () => {
     it("accepts unary bitnot on integers", () => ok("let x: inum = bitnot 5;"))
     it("rejects bitwise on float", () => bad("let x = 1.0 bitand 2.0;", /integer/))
     it("rejects bitwise on bool", () => bad("let x = TT bitand FF;", /integer/))
-    it("accepts bitwise on inum", () => ok("func f(a: inum, b: inum): inum { deliver a bitand b; }"))
+    it("accepts bitwise on inum", () =>
+      ok("func f(a: inum, b: inum): inum { deliver a bitand b; }"))
     it("accepts comparison produces hilo", () => ok("let x: hilo = 1 < 2;"))
   })
 
   describe("bit operations", () => {
     it("accepts bit index on integer var", () => ok("func f(x: inum): hilo { deliver x{0}; }"))
-    it("rejects bit index on non-integer", () => bad("func f(x: dnum): hilo { deliver x{0}; }", /integer/))
+    it("rejects bit index on non-integer", () =>
+      bad("func f(x: dnum): hilo { deliver x{0}; }", /integer/))
     it("accepts bit set", () => ok("func f(x: inum): empty { x{0} = TT; resolve; }"))
-    it("rejects bit set on non-integer", () => bad("func f(x: dnum): empty { x{0} = TT; resolve; }", /integer/))
+    it("rejects bit set on non-integer", () =>
+      bad("func f(x: dnum): empty { x{0} = TT; resolve; }", /integer/))
   })
 
   describe("custom types", () => {
@@ -85,7 +91,8 @@ describe("Analyzer", () => {
 
   describe("hub / switch", () => {
     it("accepts hub with cases", () => ok("let x = 1; hub (x) { :{1}: { let a = 1; } }"))
-    it("rejects duplicate case labels", () => bad("let x = 1; hub (x) { :{1}: { } :{1}: { } }", /Duplicate/))
+    it("rejects duplicate case labels", () =>
+      bad("let x = 1; hub (x) { :{1}: { } :{1}: { } }", /Duplicate/))
     it("accepts hub with base", () => ok("let x = 1; hub (x) { :{1}: { } base { } }"))
   })
 

@@ -2,28 +2,52 @@ import * as core from "./core.js"
 
 function foldBinary(op, lv, rv) {
   switch (op) {
-    case "+": return lv + rv
-    case "-": return lv - rv
-    case "*": return lv * rv
-    case "/": return rv !== 0 ? lv / rv : null
-    case "%": return rv !== 0 ? lv % rv : null
-    case "^": return lv ** rv
-    case "<": return lv < rv
-    case ">": return lv > rv
-    case "<=": return lv <= rv
-    case ">=": return lv >= rv
-    case "==": return lv === rv
-    case "!=": return lv !== rv
-    case "&&": return lv && rv
-    case "||": return lv || rv
-    case "^|": return !lv !== !rv
-    case "^&": return !lv === !rv
-    case "bitand": case "&": return (lv & rv) | 0
-    case "bitor": case "|": return (lv | rv) | 0
-    case "bitxor": return (lv ^ rv) | 0
-    case "shiftl": return (lv << rv) | 0
-    case "shiftr": return (lv >> rv) | 0
-    default: return null
+    case "+":
+      return lv + rv
+    case "-":
+      return lv - rv
+    case "*":
+      return lv * rv
+    case "/":
+      return rv !== 0 ? lv / rv : null
+    case "%":
+      return rv !== 0 ? lv % rv : null
+    case "^":
+      return lv ** rv
+    case "<":
+      return lv < rv
+    case ">":
+      return lv > rv
+    case "<=":
+      return lv <= rv
+    case ">=":
+      return lv >= rv
+    case "==":
+      return lv === rv
+    case "!=":
+      return lv !== rv
+    case "&&":
+      return lv && rv
+    case "||":
+      return lv || rv
+    case "^|":
+      return !lv !== !rv
+    case "^&":
+      return !lv === !rv
+    case "bitand":
+    case "&":
+      return (lv & rv) | 0
+    case "bitor":
+    case "|":
+      return lv | rv | 0
+    case "bitxor":
+      return (lv ^ rv) | 0
+    case "shiftl":
+      return (lv << rv) | 0
+    case "shiftr":
+      return (lv >> rv) | 0
+    default:
+      return null
   }
 }
 
@@ -76,7 +100,11 @@ const optStmts = {
   IfStmt(n) {
     const cond = optExpr(n.condition)
     if (cond.kind === "BoolLit") {
-      return cond.value ? optBlock(n.consequent) : (n.alternate ? optBlock(n.alternate) : core.block([]))
+      return cond.value
+        ? optBlock(n.consequent)
+        : n.alternate
+          ? optBlock(n.alternate)
+          : core.block([])
     }
     return {
       ...n,
@@ -137,7 +165,12 @@ const optExprs = {
     if (cond.kind === "BoolLit") {
       return cond.value ? optExpr(n.consequent) : optExpr(n.alternate)
     }
-    return { ...n, condition: cond, consequent: optExpr(n.consequent), alternate: optExpr(n.alternate) }
+    return {
+      ...n,
+      condition: cond,
+      consequent: optExpr(n.consequent),
+      alternate: optExpr(n.alternate),
+    }
   },
 
   CallExp: (n) => ({ ...n, args: n.args.map(optExpr) }),

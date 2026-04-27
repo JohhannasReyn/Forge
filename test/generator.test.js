@@ -14,13 +14,15 @@ describe("Generator", () => {
     it("generates false", () => assert.equal(gen("let x = FF;"), "let x = false"))
     it("generates null", () => assert.equal(gen("let x = non;"), "let x = null"))
     it("generates string literal", () => assert.equal(gen('let x = "hi";'), 'let x = "hi"'))
-    it("generates char literal as JSON string", () => assert.equal(gen("let x = 'a';"), 'let x = "a"'))
+    it("generates char literal as JSON string", () =>
+      assert.equal(gen("let x = 'a';"), 'let x = "a"'))
   })
 
   describe("variable declarations", () => {
     it("generates let with let keyword", () => assert.equal(gen("let x = 0;"), "let x = 0"))
     it("generates const declaration", () => assert.equal(gen("C x = 99;"), "const x = 99"))
-    it("generates typed let (type is dropped)", () => assert.equal(gen("let x: inum = 0;"), "let x = 0"))
+    it("generates typed let (type is dropped)", () =>
+      assert.equal(gen("let x: inum = 0;"), "let x = 0"))
   })
 
   describe("assignment statements", () => {
@@ -48,12 +50,14 @@ describe("Generator", () => {
   })
 
   describe("arithmetic operators", () => {
-    it("generates addition with parens", () => assert.equal(gen("let x = 1 + 2;"), "let x = (1 + 2)"))
+    it("generates addition with parens", () =>
+      assert.equal(gen("let x = 1 + 2;"), "let x = (1 + 2)"))
     it("generates subtraction", () => assert.equal(gen("let x = 5 - 3;"), "let x = (5 - 3)"))
     it("generates multiplication", () => assert.equal(gen("let x = 3 * 4;"), "let x = (3 * 4)"))
     it("generates division", () => assert.equal(gen("let x = 8 / 2;"), "let x = (8 / 2)"))
     it("generates modulo", () => assert.equal(gen("let x = 7 % 3;"), "let x = (7 % 3)"))
-    it("generates exponentiation as **", () => assert.equal(gen("let x = 2 ^ 8;"), "let x = (2 ** 8)"))
+    it("generates exponentiation as **", () =>
+      assert.equal(gen("let x = 2 ^ 8;"), "let x = (2 ** 8)"))
   })
 
   describe("comparison operators", () => {
@@ -77,9 +81,12 @@ describe("Generator", () => {
   })
 
   describe("bitwise operators", () => {
-    it("generates bitand keyword as &", () => assert.equal(gen("let x = 5 bitand 3;"), "let x = (5 & 3)"))
-    it("generates bitor keyword as |", () => assert.equal(gen("let x = 5 bitor 3;"), "let x = (5 | 3)"))
-    it("generates bitxor keyword as ^", () => assert.equal(gen("let x = 5 bitxor 3;"), "let x = (5 ^ 3)"))
+    it("generates bitand keyword as &", () =>
+      assert.equal(gen("let x = 5 bitand 3;"), "let x = (5 & 3)"))
+    it("generates bitor keyword as |", () =>
+      assert.equal(gen("let x = 5 bitor 3;"), "let x = (5 | 3)"))
+    it("generates bitxor keyword as ^", () =>
+      assert.equal(gen("let x = 5 bitxor 3;"), "let x = (5 ^ 3)"))
     it("generates shiftl as <<", () => assert.equal(gen("let x = 1 shiftl 2;"), "let x = (1 << 2)"))
     it("generates shiftr as >>", () => assert.equal(gen("let x = 8 shiftr 1;"), "let x = (8 >> 1)"))
     it("generates symbolic & as &", () => assert.equal(gen("let x = 5 & 3;"), "let x = (5 & 3)"))
@@ -110,7 +117,9 @@ describe("Generator", () => {
       assert.equal(gen("func f(a: inum): inum { deliver a; }"), "function f(a) {\n  return a\n}")
     })
     it("generates function with multiple params", () => {
-      assert.ok(gen("func add(a: inum, b: inum): inum { deliver a; }").includes("function add(a, b)"))
+      assert.ok(
+        gen("func add(a: inum, b: inum): inum { deliver a; }").includes("function add(a, b)"),
+      )
     })
     it("generates break statement", () => {
       assert.ok(gen("whenis (TT) { escape; }").includes("break"))
@@ -122,7 +131,11 @@ describe("Generator", () => {
       assert.ok(gen("func f(): empty { resolve; } f();").includes("f()"))
     })
     it("generates call with args", () => {
-      assert.ok(gen("func add(a: inum, b: inum): inum { deliver a; } let x = add(1, 2);").includes("add(1, 2)"))
+      assert.ok(
+        gen("func add(a: inum, b: inum): inum { deliver a; } let x = add(1, 2);").includes(
+          "add(1, 2)",
+        ),
+      )
     })
   })
 
@@ -133,7 +146,7 @@ describe("Generator", () => {
     it("generates if-else statement", () => {
       assert.equal(
         gen("is (TT) { let x = 1; } not { let y = 2; }"),
-        "if (true) {\n  let x = 1\n} else {\n  let y = 2\n}"
+        "if (true) {\n  let x = 1\n} else {\n  let y = 2\n}",
       )
     })
     it("generates while loop", () => {

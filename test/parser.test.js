@@ -42,7 +42,9 @@ describe("Parser", () => {
     it("parses function with params", () => ok("func add(a: inum, b: inum): inum { deliver a; }"))
     it("parses function call", () => ok("func f(): empty { resolve; } f();"))
     it("parses function with all types", () => {
-      ok("func f(a: byte, b: char, c: snum, d: lnum, e: fnum, g: dnum, h: hilo): empty { resolve; }")
+      ok(
+        "func f(a: byte, b: char, c: snum, d: lnum, e: fnum, g: dnum, h: hilo): empty { resolve; }",
+      )
     })
   })
 
@@ -64,8 +66,10 @@ describe("Parser", () => {
   })
 
   describe("switch / hub", () => {
-    it("parses hub with cases", () => ok("let x = 1; hub (x) { :{1}: { let a = 1; } :{2}: { let b = 2; } }"))
-    it("parses hub with base", () => ok("let x = 1; hub (x) { :{1}: { let a = 1; } base { let b = 0; } }"))
+    it("parses hub with cases", () =>
+      ok("let x = 1; hub (x) { :{1}: { let a = 1; } :{2}: { let b = 2; } }"))
+    it("parses hub with base", () =>
+      ok("let x = 1; hub (x) { :{1}: { let a = 1; } base { let b = 0; } }"))
     it("parses hub with no cases", () => ok("let x = 1; hub (x) { base { let b = 0; } }"))
   })
 
@@ -103,7 +107,8 @@ describe("Parser", () => {
 
   describe("custom types", () => {
     it("parses plain custom type", () => ok("custom Color = { Red, Green, Blue; }"))
-    it("parses valued custom type", () => ok('custom Token = { Pi(3.14), Count(21), Label("hi"); }'))
+    it("parses valued custom type", () =>
+      ok('custom Token = { Pi(3.14), Count(21), Label("hi"); }'))
     it("parses bool-valued custom type", () => ok("custom Flag = { On(TT), Off(FF); }"))
   })
 

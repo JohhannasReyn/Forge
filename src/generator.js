@@ -11,9 +11,7 @@ const generators = {
     `function ${n.name}(${n.params.map((p) => p.name).join(", ")}) {\n${genBlock(n.body)}\n}`,
 
   CustomDecl: (n) => {
-    const entries = n.members.map((m, i) =>
-      `  ${m.name}: ${m.value !== null ? gen(m.value) : i}`
-    )
+    const entries = n.members.map((m, i) => `  ${m.name}: ${m.value !== null ? gen(m.value) : i}`)
     return `const ${n.name} = Object.freeze({\n${entries.join(",\n")}\n})`
   },
 
@@ -62,8 +60,7 @@ const generators = {
 
   ExprStmt: (n) => gen(n.expression),
 
-  Ternary: (n) =>
-    `(${gen(n.condition)} ? ${gen(n.consequent)} : ${gen(n.alternate)})`,
+  Ternary: (n) => `(${gen(n.condition)} ? ${gen(n.consequent)} : ${gen(n.alternate)})`,
 
   BinaryExp: (n) => {
     const l = gen(n.left)
@@ -92,8 +89,7 @@ const generators = {
   PreIncDec: (n) => `${n.op}${n.name}`,
 
   PostIncDec: (n) => {
-    const operand =
-      n.operand && n.operand.kind === "IdExp" ? n.operand.name : gen(n.operand)
+    const operand = n.operand && n.operand.kind === "IdExp" ? n.operand.name : gen(n.operand)
     return `${operand}${n.op}`
   },
 
