@@ -4,6 +4,8 @@
 
 <h1 align="center">Forge</h1>
 
+<p align="center"><strong><a href="https://johhanasreyn.github.io/Forge/">Companion Website</a></strong> · <strong><a href="https://github.com/JohhannasReyn/Forge">GitHub Repository</a></strong></p>
+
 <p align="center">
   A statically-typed, JavaScript-targeting programming language with expressive control flow and intuitive bit manipulation.
 </p>
