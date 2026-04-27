@@ -208,5 +208,12 @@ describe("Analyzer", () => {
       let x = 1;
       hub (x) { :{1}: { deliver 1; } }
     }`, /missing return/i))
+    it("rejects function with deliver only inside a loop", () =>
+      bad("func f(): inum { whenis (TT) { deliver 1; } }", /missing return/i))
+    it("rejects hub where base clause does not return", () =>
+      bad(`func f(): inum {
+    let x = 1;
+    hub (x) { :{1}: { deliver 1; } base { let y = 2; } }
+  }`, /missing return/i))
   })
 })
