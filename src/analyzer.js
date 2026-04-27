@@ -45,6 +45,30 @@ function analyzeExpr(node, ctx) {
   return handler(node, ctx)
 }
 
+function blockAlwaysReturns(block) {
+  for (const stmt of block.statements) {
+    if (stmtAlwaysReturns(stmt)) return true
+  }
+  return false
+}
+
+function stmtAlwaysReturns(stmt) {
+  if (stmt.kind === "ReturnStmt" && stmt.expression !== null) return true
+  if (stmt.kind === "IfStmt") {
+    return (
+      stmt.alternate !== null &&
+      blockAlwaysReturns(stmt.consequent) &&
+      blockAlwaysReturns(stmt.alternate)
+    )
+  }
+  if (stmt.kind === "SwitchStmt") {
+    if (!stmt.defaultCase) return false
+    if (!blockAlwaysReturns(stmt.defaultCase)) return false
+    return stmt.cases.every(c => blockAlwaysReturns(c.body))
+  }
+  return false
+}
+
 const stmtHandlers = {
   FuncDecl(node, ctx) {
     if (!ctx.locals.has(node.name)) {
@@ -60,6 +84,12 @@ const stmtHandlers = {
       inner.add(p.name, { kind: "Variable", name: p.name, type: p.type, readOnly: false })
     }
     stmtHandlers.Block(node.body, inner)
+    if (node.returnType !== core.EMPTY) {
+      must(
+        blockAlwaysReturns(node.body),
+        `Missing return: function '${node.name}' does not return a value on all code paths`
+      )
+    }
     return node
   },
 
