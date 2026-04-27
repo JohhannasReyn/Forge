@@ -455,7 +455,7 @@ pre {
 
       <div class="feature-card">
         <h3>Safety by Default</h3>
-        <p>Thirteen static checks enforced at compile time — undeclared variables, bad assignments, wrong call signatures, type mismatches, and more. Errors surface before execution.</p>
+        <p>Sixteen static checks enforced at compile time — undeclared variables, bad assignments, wrong call signatures, type mismatches, and more. Errors surface before execution.</p>
       </div>
 
       <div class="feature-card">
@@ -483,7 +483,7 @@ pre {
 <section id="checks">
   <div class="container">
     <h2>Static Analysis</h2>
-    <p style="margin-bottom:1.5rem;font-size:0.95rem;color:#555;">Forge enforces thirteen constraints at compile time. Three additional checks are planned but not yet implemented.</p>
+    <p style="margin-bottom:1.5rem;font-size:0.95rem;color:#555;">Forge enforces sixteen constraints at compile time.</p>
     <ul class="checks-list">
       <li><span class="check-num">1</span><span class="check-label">Undeclared identifier use</span><span class="badge badge-enforced">Enforced</span></li>
       <li><span class="check-num">2</span><span class="check-label">Duplicate declarations in same scope</span><span class="badge badge-enforced">Enforced</span></li>
@@ -498,9 +498,9 @@ pre {
       <li><span class="check-num">11</span><span class="check-label">Duplicate case labels in <code>hub</code></span><span class="badge badge-enforced">Enforced</span></li>
       <li><span class="check-num">12</span><span class="check-label">Bitwise operations on non-integer types</span><span class="badge badge-enforced">Enforced</span></li>
       <li><span class="check-num">13</span><span class="check-label">Type widening rules (e.g. <code>hilo</code> → <code>inum</code>)</span><span class="badge badge-enforced">Enforced</span></li>
-      <li><span class="check-num">14</span><span class="check-label">Missing return in non-void functions</span><span class="badge badge-pending">Not yet enforced</span></li>
-      <li><span class="check-num">15</span><span class="check-label">Multiple <code>base</code> clauses in <code>hub</code> (grammar prevents it structurally)</span><span class="badge badge-pending">Not yet enforced</span></li>
-      <li><span class="check-num">16</span><span class="check-label">Non-constant case label expressions</span><span class="badge badge-pending">Not yet enforced</span></li>
+      <li><span class="check-num">14</span><span class="check-label">Missing return in non-void functions</span><span class="badge badge-enforced">Enforced</span></li>
+      <li><span class="check-num">15</span><span class="check-label">Multiple <code>base</code> clauses in <code>hub</code> (grammar prevents it structurally)</span><span class="badge badge-enforced">Enforced</span></li>
+      <li><span class="check-num">16</span><span class="check-label">Non-constant case label expressions</span><span class="badge badge-enforced">Enforced</span></li>
     </ul>
   </div>
 </section>
