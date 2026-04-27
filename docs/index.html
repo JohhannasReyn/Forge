@@ -123,3 +123,457 @@
 </section>
 
 <hr class="section-rule">
+
+<!-- EXAMPLES -->
+<section id="examples">
+  <div class="container">
+    <h2>Examples</h2>
+    <p style="margin-bottom:1.5rem;font-size:0.95rem;color:#555;">Five complete programs — click a tab to browse, then toggle between Forge source and generated JavaScript.</p>
+
+    <div class="examples-container">
+      <!-- TOP-LEVEL TABS -->
+      <div class="example-tabs">
+        <button class="example-tab active" data-panel="ex-hello">Hello</button>
+        <button class="example-tab" data-panel="ex-math">Math</button>
+        <button class="example-tab" data-panel="ex-bitops">Bitops</button>
+        <button class="example-tab" data-panel="ex-enum">Enum</button>
+        <button class="example-tab" data-panel="ex-globals">Globals</button>
+      </div>
+
+      <!-- EXAMPLE 1: HELLO -->
+      <div class="example-panel active" id="ex-hello">
+        <p class="example-desc">Demonstrates: typed function signatures, <code>is</code>/<code>not</code> (if/else), recursion, <code>deliver</code> (valued return), <code>resolve</code> (void return).</p>
+        <div class="code-tabs">
+          <button class="code-tab active" data-pane="forge-pane">Forge</button>
+          <button class="code-tab" data-pane="js-pane">JavaScript</button>
+        </div>
+        <div class="forge-pane code-pane active"><pre>// Hello World example — functions, strings, if/else
+
+func greet(name: dnum): empty {
+  resolve;
+}
+
+func max(a: inum, b: inum): inum {
+  is (a &gt; b) {
+    deliver a;
+  } not {
+    deliver b;
+  }
+}
+
+func factorial(n: inum): inum {
+  is (n &lt;= 1) {
+    deliver 1;
+  }
+  deliver n * factorial(n - 1);
+}
+
+func abs(x: inum): inum {
+  is (x &lt; 0) {
+    deliver -x;
+  }
+  deliver x;
+}
+
+let biggest = max(42, 17);
+let fact5 = factorial(5);
+let distance = abs(-99);</pre></div>
+        <div class="js-pane code-pane"><pre>function greet(name) {
+  return
+}
+function max(a, b) {
+  if ((a &gt; b)) {
+  return a
+} else {
+  return b
+}
+}
+function factorial(n) {
+  if ((n &lt;= 1)) {
+  return 1
+}
+  return (n * factorial((n - 1)))
+}
+function abs(x) {
+  if ((x &lt; 0)) {
+  return -(x)
+}
+  return x
+}
+let biggest = max(42, 17)
+let fact5 = factorial(5)
+let distance = abs(-99)</pre></div>
+      </div>
+
+      <!-- EXAMPLE 2: MATH -->
+      <div class="example-panel" id="ex-math">
+        <p class="example-desc">Demonstrates: <code>whento</code> (for loop), <code>whenis</code> (while loop), compound assignment (<code>*=</code>, <code>+=</code>), constants (<code>C</code>), GCD algorithm.</p>
+        <div class="code-tabs">
+          <button class="code-tab active" data-pane="forge-pane">Forge</button>
+          <button class="code-tab" data-pane="js-pane">JavaScript</button>
+        </div>
+        <div class="forge-pane code-pane active"><pre>// Math example — loops, arithmetic, exponentiation
+
+func power(b: inum, e: inum): inum {
+  let result = 1;
+  whento (let i = 0; i &lt; e; i++) {
+    result *= b;
+  }
+  deliver result;
+}
+
+func sumTo(n: inum): inum {
+  let total = 0;
+  let i = 1;
+  whenis (i &lt;= n) {
+    total += i;
+    i += 1;
+  }
+  deliver total;
+}
+
+func gcd(a: inum, b: inum): inum {
+  whenis (b != 0) {
+    let temp = b;
+    b = a % b;
+    a = temp;
+  }
+  deliver a;
+}
+
+func isEven(n: inum): hilo {
+  deliver (n % 2) == 0;
+}
+
+C PI = 3;
+let p = power(2, 10);
+let s = sumTo(100);
+let g = gcd(48, 18);
+let evenCheck = isEven(42);</pre></div>
+        <div class="js-pane code-pane"><pre>function power(b, e) {
+  let result = 1
+  for (let i = 0; (i &lt; e); i++) {
+  result *= b
+}
+  return result
+}
+function sumTo(n) {
+  let total = 0
+  let i = 1
+  while ((i &lt;= n)) {
+  total += i
+  i += 1
+}
+  return total
+}
+function gcd(a, b) {
+  while ((b != 0)) {
+  let temp = b
+  b = (a % b)
+  a = temp
+}
+  return a
+}
+function isEven(n) {
+  return ((n % 2) == 0)
+}
+const PI = 3
+let p = power(2, 10)
+let s = sumTo(100)
+let g = gcd(48, 18)
+let evenCheck = isEven(42)</pre></div>
+      </div>
+
+      <!-- EXAMPLE 3: BITOPS -->
+      <div class="example-panel" id="ex-bitops">
+        <p class="example-desc">Demonstrates: <code>bitand</code>, <code>bitor</code>, <code>shiftl</code>, <code>shiftr</code>, <code>bitnot</code>, bit-index read (<code>x{pos}</code>), bit-index write (<code>flags{0} = TT</code>).</p>
+        <div class="code-tabs">
+          <button class="code-tab active" data-pane="forge-pane">Forge</button>
+          <button class="code-tab" data-pane="js-pane">JavaScript</button>
+        </div>
+        <div class="forge-pane code-pane active"><pre>// Bit operations example — bit indexing, bitwise ops, flags
+
+func setBit(x: inum, pos: inum): inum {
+  deliver x | (1 shiftl pos);
+}
+
+func clearBit(x: inum, pos: inum): inum {
+  deliver x &amp; (bitnot (1 shiftl pos));
+}
+
+func testBit(x: inum, pos: inum): hilo {
+  deliver x{pos};
+}
+
+func countBits(x: inum): inum {
+  let count = 0;
+  let n = x;
+  whenis (n != 0) {
+    count += n &amp; 1;
+    n = n shiftr 1;
+  }
+  deliver count;
+}
+
+let flags = 0;
+flags{0} = TT;
+flags{2} = TT;
+flags{4} = TT;
+
+let masked = flags bitand 5;
+let shifted = flags shiftl 1;
+let bit2 = testBit(flags, 2);
+let ones = countBits(flags);
+
+flags{2} = FF;</pre></div>
+        <div class="js-pane code-pane"><pre>function setBit(x, pos) {
+  return (x | (1 &lt;&lt; pos))
+}
+function clearBit(x, pos) {
+  return (x &amp; ~((1 &lt;&lt; pos)))
+}
+function testBit(x, pos) {
+  return ((x &gt;&gt; pos) &amp; 1)
+}
+function countBits(x) {
+  let count = 0
+  let n = x
+  while ((n != 0)) {
+  count += (n &amp; 1)
+  n = (n &gt;&gt; 1)
+}
+  return count
+}
+let flags = 0
+flags = flags | (1 &lt;&lt; 0)
+flags = flags | (1 &lt;&lt; 2)
+flags = flags | (1 &lt;&lt; 4)
+let masked = (flags &amp; 5)
+let shifted = (flags &lt;&lt; 1)
+let bit2 = testBit(flags, 2)
+let ones = countBits(flags)
+flags = flags &amp; ~(1 &lt;&lt; 2)</pre></div>
+      </div>
+
+      <!-- EXAMPLE 4: ENUM -->
+      <div class="example-panel" id="ex-enum">
+        <p class="example-desc">Demonstrates: <code>custom</code> types (plain and valued), <code>hub</code> switch with case labels and <code>base</code> default, field access (<code>Direction.North</code>).</p>
+        <div class="code-tabs">
+          <button class="code-tab active" data-pane="forge-pane">Forge</button>
+          <button class="code-tab" data-pane="js-pane">JavaScript</button>
+        </div>
+        <div class="forge-pane code-pane active"><pre>// Custom types (enums) example — hub/switch, field access
+
+custom Direction = {
+  North,
+  South,
+  East,
+  West;
+}
+
+custom Status = {
+  Ok(0),
+  Warn(1),
+  Err(2);
+}
+
+custom Color = {
+  Red(255),
+  Green(128),
+  Blue(64);
+}
+
+func dirName(d: inum): inum {
+  hub (d) {
+    :{0}: {
+      deliver Direction.North;
+    }
+    :{1}: {
+      deliver Direction.South;
+    }
+    :{2}: {
+      deliver Direction.East;
+    }
+    :{3}: {
+      deliver Direction.West;
+    }
+    base {
+      deliver -1;
+    }
+  }
+}
+
+func isError(code: inum): hilo {
+  deliver code == 2;
+}
+
+let dir = Direction.North;
+let status = Status.Ok;
+let col = Color.Red;
+let check = isError(2);
+let named = dirName(1);</pre></div>
+        <div class="js-pane code-pane"><pre>const Direction = Object.freeze({
+  North: 0,
+  South: 1,
+  East: 2,
+  West: 3
+})
+const Status = Object.freeze({
+  Ok: 0,
+  Warn: 1,
+  Err: 2
+})
+const Color = Object.freeze({
+  Red: 255,
+  Green: 128,
+  Blue: 64
+})
+function dirName(d) {
+  switch (d) {
+  case 0:
+  return Direction.North
+    break
+  case 1:
+  return Direction.South
+    break
+  case 2:
+  return Direction.East
+    break
+  case 3:
+  return Direction.West
+    break
+  default:
+  return -1
+}
+}
+function isError(code) {
+  return (code == 2)
+}
+let dir = Direction.North
+let status = Status.Ok
+let col = Color.Red
+let check = isError(2)
+let named = dirName(1)</pre></div>
+      </div>
+
+      <!-- EXAMPLE 5: GLOBALS -->
+      <div class="example-panel" id="ex-globals">
+        <p class="example-desc">Demonstrates: <code>global</code> declarations, field access (<code>config.maxRetries</code>), multi-branch functions, nested loop + if/else (Collatz).</p>
+        <div class="code-tabs">
+          <button class="code-tab active" data-pane="forge-pane">Forge</button>
+          <button class="code-tab" data-pane="js-pane">JavaScript</button>
+        </div>
+        <div class="forge-pane code-pane active"><pre>// Globals and field access example — global state, complex programs
+
+global config = {
+  maxRetries: 3,
+  timeout: 5000,
+  version: 1
+};
+
+global counters = {
+  hits: 0,
+  misses: 0,
+  errors: 0
+};
+
+func clamp(val: inum, lo: inum, hi: inum): inum {
+  is (val &lt; lo) {
+    deliver lo;
+  }
+  is (val &gt; hi) {
+    deliver hi;
+  }
+  deliver val;
+}
+
+func inRange(val: inum, lo: inum, hi: inum): hilo {
+  deliver val &gt;= lo &amp;&amp; val &lt;= hi;
+}
+
+func sign(x: inum): inum {
+  is (x &gt; 0) { deliver 1; }
+  is (x &lt; 0) { deliver -1; }
+  deliver 0;
+}
+
+func isEven(n: inum): hilo {
+  deliver (n % 2) == 0;
+}
+
+func collatz(n: inum): inum {
+  let steps = 0;
+  let x = n;
+  whenis (x != 1) {
+    is (isEven(x)) {
+      x = x / 2;
+    } not {
+      x = 3 * x + 1;
+    }
+    steps += 1;
+  }
+  deliver steps;
+}
+
+let v = clamp(150, 0, 100);
+let ok = inRange(50, 0, 100);
+let s = sign(-7);
+let maxR = config.maxRetries;</pre></div>
+        <div class="js-pane code-pane"><pre>const config = {
+  maxRetries: 3,
+  timeout: 5000,
+  version: 1
+}
+const counters = {
+  hits: 0,
+  misses: 0,
+  errors: 0
+}
+function clamp(val, lo, hi) {
+  if ((val &lt; lo)) {
+  return lo
+}
+  if ((val &gt; hi)) {
+  return hi
+}
+  return val
+}
+function inRange(val, lo, hi) {
+  return ((val &gt;= lo) &amp;&amp; (val &lt;= hi))
+}
+function sign(x) {
+  if ((x &gt; 0)) {
+  return 1
+}
+  if ((x &lt; 0)) {
+  return -1
+}
+  return 0
+}
+function isEven(n) {
+  return ((n % 2) == 0)
+}
+function collatz(n) {
+  let steps = 0
+  let x = n
+  while ((x != 1)) {
+  if (isEven(x)) {
+  x = (x / 2)
+} else {
+  x = ((3 * x) + 1)
+}
+  steps += 1
+}
+  return steps
+}
+let v = clamp(150, 0, 100)
+let ok = inRange(50, 0, 100)
+let s = sign(-7)
+let maxR = config.maxRetries</pre></div>
+      </div>
+
+    </div><!-- /.examples-container -->
+  </div>
+</section>
+
+<hr class="section-rule">
